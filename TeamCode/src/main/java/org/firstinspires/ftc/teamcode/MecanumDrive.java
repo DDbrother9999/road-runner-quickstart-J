@@ -51,16 +51,19 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.nobles.robotics.TuningParameter;
+
 @Config
 public final class MecanumDrive {
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
-        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection
+                = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+
+        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection
+                = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
         // drive model parameters
         public double inPerTick = 0.0231696995344901;
@@ -91,7 +94,7 @@ public final class MecanumDrive {
         public double headingVelGain = 0.1; // shared with turn
     }
 
-    public static Params PARAMS = new Params();
+    public static Params PARAMS = TuningParameter.current;
 
     public final MecanumKinematics kinematics = new MecanumKinematics(
             PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
@@ -139,8 +142,10 @@ public final class MecanumDrive {
             imu = lazyImu.get();
 
             // TODO: reverse encoders if needed
-            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-            leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftFront.setDirection(TuningParameter.current.leftFrontDirection);
+            leftBack.setDirection(TuningParameter.current.leftBackDirection);
+            rightFront.setDirection(TuningParameter.current.rightFrontDirection);
+            rightBack.setDirection(TuningParameter.current.rightBackDirection);
         }
 
         @Override
@@ -229,8 +234,10 @@ public final class MecanumDrive {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // TODO: reverse motor directions if needed
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(TuningParameter.current.leftFrontDirection);
+        leftBack.setDirection(TuningParameter.current.leftBackDirection);
+        rightFront.setDirection(TuningParameter.current.rightFrontDirection);
+        rightBack.setDirection(TuningParameter.current.rightBackDirection);
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
