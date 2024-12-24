@@ -34,75 +34,21 @@ public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver impleme
    @NotNull
    public static final Companion Companion = new Companion((DefaultConstructorMarker)null);
 
-   public static final float goBILDA_SWINGARM_POD = 13.26291192f; //ticks-per-mm for the goBILDA Swingarm Pod
-   public static final float goBILDA_4_BAR_POD    = 19.89436789f; //ticks-per-mm for the goBILDA 4-Bar Pod
-
-   private float currentTicksPerMM;
-
    public GoBildaPinpointDriverRR(@NotNull I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned) {
       super(deviceClient, deviceClientIsOwned);
    }
 
-   public final float getCurrentTicksPerMM() {
-      return this.currentTicksPerMM;
-   }
-
-   public final void setCurrentTicksPerMM(float var1) {
-      this.currentTicksPerMM = var1;
-   }
-
-   public void setEncoderResolution(@NotNull GoBildaPinpointDriver.GoBildaOdometryPods pods) {
-      Intrinsics.checkNotNullParameter(pods, "pods");
-      super.setEncoderResolution(pods);
-      float var10001;
-      if (pods == GoBildaOdometryPods.goBILDA_SWINGARM_POD) {
-         var10001 = 13.262912F;
-      } else {
-         if (pods != GoBildaOdometryPods.goBILDA_4_BAR_POD) {
-            throw new NotImplementedError("This odometry type not implemented in Roadrunner Pinpoint Integration");
-         }
-
-         var10001 = 19.894367F;
-      }
-
-      this.currentTicksPerMM = var10001;
-   }
-
-   public void setEncoderResolution(double ticks_per_mm) {
-      super.setEncoderResolution(ticks_per_mm);
-      this.currentTicksPerMM = (float)ticks_per_mm;
-   }
-
    @NotNull
    public final Pose2d setPosition(@NotNull Pose2d pos) {
-      Intrinsics.checkNotNullParameter(pos, "pos");
       this.setPosition(new Pose2D(DistanceUnit.INCH, pos.position.x, pos.position.y, AngleUnit.RADIANS, pos.heading.toDouble()));
       return pos;
    }
 
-   @NotNull
-   public final Pose2d getPositionRR() {
-      return new Pose2d(this.getPosition().getX(DistanceUnit.INCH), this.getPosition().getY(DistanceUnit.INCH), this.getPosition().getHeading(AngleUnit.RADIANS));
-   }
-
-   public final void setPositionRR(@NotNull Pose2d newPose) {
-      Intrinsics.checkNotNullParameter(newPose, "newPose");
-      this.setPosition(new Pose2D(DistanceUnit.INCH, newPose.position.x, newPose.position.y, AngleUnit.RADIANS, newPose.heading.toDouble()));
-   }
-
-   @NotNull
-   public final PoseVelocity2d getVelocityRR() {
-      return new PoseVelocity2d(new Vector2d(this.getVelocity().getX(DistanceUnit.INCH), this.getVelocity().getY(DistanceUnit.INCH)), this.getVelocity().getHeading(AngleUnit.RADIANS));
-   }
-
    public boolean initialize(@NotNull IMU.Parameters parameters) {
-      Intrinsics.checkNotNullParameter(parameters, "parameters");
       return true;
    }
 
    public void resetYaw() {
-      Pose2d curPos = this.getPositionRR();
-      this.setPositionRR(new Pose2d(curPos.position, Rotation2d.Companion.fromDouble(0.0)));
    }
 
    @NotNull
@@ -112,12 +58,9 @@ public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver impleme
 
    @NotNull
    public Orientation getRobotOrientation(@NotNull AxesReference reference, @NotNull AxesOrder order, @NotNull AngleUnit angleUnit) {
-      Intrinsics.checkNotNullParameter(reference, "reference");
-      Intrinsics.checkNotNullParameter(order, "order");
-      Intrinsics.checkNotNullParameter(angleUnit, "angleUnit");
-      Orientation var4 = (new Orientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS, 0.0F, 0.0F, (float)this.getPosition().getHeading(AngleUnit.RADIANS), System.nanoTime())).toAxesReference(reference).toAxesOrder(order).toAngleUnit(angleUnit);
-      Intrinsics.checkNotNullExpressionValue(var4, "toAngleUnit(...)");
-      return var4;
+      return (new Orientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS, 0.0F, 0.0F,
+              (float) this.getPosition().getHeading(AngleUnit.RADIANS), System.nanoTime()))
+              .toAxesReference(reference).toAxesOrder(order).toAngleUnit(angleUnit);
    }
 
    public static Quaternion eulerToQuaternion(double yaw) {
@@ -128,7 +71,6 @@ public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver impleme
       return new Quaternion((float)qw, (float)qx, (float)qy, (float)qz, System.nanoTime());
    }
 
-
    @NotNull
    public Quaternion getRobotOrientationAsQuaternion() {
       return eulerToQuaternion(this.getPosition().getHeading(AngleUnit.RADIANS));
@@ -136,10 +78,8 @@ public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver impleme
 
    @NotNull
    public AngularVelocity getRobotAngularVelocity(@NotNull AngleUnit angleUnit) {
-      Intrinsics.checkNotNullParameter(angleUnit, "angleUnit");
-      AngularVelocity var2 = (new AngularVelocity(AngleUnit.RADIANS, 0.0F, 0.0F, (float)this.getHeadingVelocity(), System.nanoTime())).toAngleUnit(angleUnit);
-      Intrinsics.checkNotNullExpressionValue(var2, "toAngleUnit(...)");
-      return var2;
+      return (new AngularVelocity(AngleUnit.RADIANS, 0.0F, 0.0F,
+              (float) this.getHeadingVelocity(), System.nanoTime())).toAngleUnit(angleUnit);
    }
 
    public static final class Companion {

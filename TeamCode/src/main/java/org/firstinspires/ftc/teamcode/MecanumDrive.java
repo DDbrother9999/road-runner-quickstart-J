@@ -25,6 +25,7 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -41,8 +42,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
@@ -249,7 +248,7 @@ public class MecanumDrive {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         if (TuningParameter.current.usePinpointDevice) {
-            GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,TuningParameter.current.pinpointParams.pinpointDeviceName);
+            GoBildaPinpointDriverRR pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class,TuningParameter.current.pinpointParams.pinpointDeviceName);
 
             hardwareMap.put("par",
                     new PinpointDcMotorEx(pinpoint, false, DcMotorSimple.Direction.FORWARD, leftFront.getController()));
@@ -280,9 +279,8 @@ public class MecanumDrive {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            // TODO Jeffrey: check here
-            Pose2D convertedPose2D = new Pose2D(DistanceUnit.MM, pose.position.x, pose.position.y, AngleUnit.RADIANS, pose.heading.real);
-            pinpoint.setPosition(convertedPose2D);
+
+            pinpoint.setPosition(pose);
 
 
         } else {

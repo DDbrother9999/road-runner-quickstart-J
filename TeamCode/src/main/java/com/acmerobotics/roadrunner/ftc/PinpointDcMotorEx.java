@@ -8,11 +8,11 @@ import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
 import edu.nobles.robotics.TuningParameter;
 
 public class PinpointDcMotorEx extends DcMotorImplEx {
-    private final GoBildaPinpointDriver pinpoint;
+    private final GoBildaPinpointDriverRR pinpoint;
 
     private final boolean usePerpendicular;
 
-    public PinpointDcMotorEx(GoBildaPinpointDriver pinpoint, boolean usePerpendicular, Direction direction, DcMotorController dummyController) {
+    public PinpointDcMotorEx(GoBildaPinpointDriverRR pinpoint, boolean usePerpendicular, Direction direction, DcMotorController dummyController) {
         super(dummyController, 0, direction);
         this.pinpoint = pinpoint;
         this.usePerpendicular = usePerpendicular;
