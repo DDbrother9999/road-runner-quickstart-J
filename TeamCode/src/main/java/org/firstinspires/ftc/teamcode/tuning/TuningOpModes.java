@@ -69,9 +69,14 @@ public final class TuningOpModes {
                 List<Encoder> parEncs = new ArrayList<>(), perpEncs = new ArrayList<>();
 
                 PinpointDcMotorEx parDc = new PinpointDcMotorEx(pd.pinpoint, false, DcMotorSimple.Direction.FORWARD, pd.leftBack.getController());
-                parEncs.add( new RawEncoder( parDc));
+                Encoder parEncoder = new RawEncoder(parDc);
+                parEncoder.setDirection(TuningParameter.current.parDirection);
+                parEncs.add(parEncoder);
+
                 PinpointDcMotorEx perpDc = new PinpointDcMotorEx(pd.pinpoint, true, DcMotorSimple.Direction.FORWARD, pd.leftBack.getController());
-                perpEncs.add( new RawEncoder( perpDc));
+                Encoder perpEncoder = new RawEncoder(perpDc);
+                perpEncoder.setDirection(TuningParameter.current.perpDirection);
+                perpEncs.add(perpEncoder);
 
                 return new DriveView(
                         DriveType.MECANUM,

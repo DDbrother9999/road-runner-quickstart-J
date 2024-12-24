@@ -21,6 +21,9 @@ public class TuningParameter extends MecanumDrive.Params {
     public DcMotorSimple.Direction rightFrontDirection = FORWARD;
     public DcMotorSimple.Direction rightBackDirection = FORWARD;
 
+    public DcMotorSimple.Direction parDirection;
+    public DcMotorSimple.Direction perpDirection;
+
     private static TuningParameter setUpRealRobot() {
         TuningParameter param = new TuningParameter();
 
@@ -33,13 +36,13 @@ public class TuningParameter extends MecanumDrive.Params {
 
         // drive model parameters
         param.inPerTick = 1;
-        param.lateralInPerTick = 0.0228513095084505;
-        param.trackWidthTicks = 922.6943228960521;
+        param.lateralInPerTick = 1;
+        param.trackWidthTicks = 0;
 
         // feedforward parameters (in tick units)
-        param.kS = 0.7463453105505442;
-        param.kV = 0.004149425258238021;
-        param.kA = 0.00001;
+        param.kS = 0;
+        param.kV = 0;
+        param.kA = 0;
 
         // path profile parameters (in inches)
         param.maxWheelVel = 10;
@@ -51,16 +54,19 @@ public class TuningParameter extends MecanumDrive.Params {
         param.maxAngAccel = Math.PI;
 
         // path controller gains
-        param.axialGain = 4.0;
-        param.lateralGain = 3.0;
-        param.headingGain = 2.0; // shared with turn
+        param.axialGain = 0.0;
+        param.lateralGain = 0.0;
+        param.headingGain = 0.0; // shared with turn
 
         param.axialVelGain = 0.0;
         param.lateralVelGain = 0.0;
-        param.headingVelGain = 0.1; // shared with turn
+        param.headingVelGain = 0.0; // shared with turn
 
         param.leftFrontDirection = REVERSE;
         param.leftBackDirection = REVERSE;
+
+        param.parDirection = REVERSE;
+        param.perpDirection = REVERSE;
 
         return param;
     }
