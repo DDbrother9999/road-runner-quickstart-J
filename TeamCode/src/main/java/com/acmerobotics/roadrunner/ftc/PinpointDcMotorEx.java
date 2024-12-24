@@ -3,12 +3,16 @@ package com.acmerobotics.roadrunner.ftc;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 
+import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
+
+import edu.nobles.robotics.TuningParameter;
+
 public class PinpointDcMotorEx extends DcMotorImplEx {
-    private final GoBildaPinpointDriverRR pinpoint;
+    private final GoBildaPinpointDriver pinpoint;
 
     private final boolean usePerpendicular;
 
-    public PinpointDcMotorEx(GoBildaPinpointDriverRR pinpoint, boolean usePerpendicular, Direction direction, DcMotorController dummyController) {
+    public PinpointDcMotorEx(GoBildaPinpointDriver pinpoint, boolean usePerpendicular, Direction direction, DcMotorController dummyController) {
         super(dummyController, 0, direction);
         this.pinpoint = pinpoint;
         this.usePerpendicular = usePerpendicular;
@@ -30,9 +34,9 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
         pinpoint.update();
 
         if (this.usePerpendicular) {
-            return pinpoint.getVelY() * pinpoint.getCurrentTicksPerMM();
+            return pinpoint.getVelY() * TuningParameter.current.pinpointParams.encoderResolution;
         } else {
-            return pinpoint.getVelX() * pinpoint.getCurrentTicksPerMM();
+            return pinpoint.getVelX() * TuningParameter.current.pinpointParams.encoderResolution;
         }
 
     }

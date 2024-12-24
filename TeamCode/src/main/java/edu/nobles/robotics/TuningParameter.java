@@ -1,11 +1,9 @@
 package edu.nobles.robotics;
 
-import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.PinpointDrive;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
@@ -17,23 +15,34 @@ public class TuningParameter extends MecanumDrive.Params {
 
     public Class<?> DRIVE_CLASS;
 
+    public boolean usePinpointDevice;
+
+    public String imuName;
+
     public DcMotorSimple.Direction leftFrontDirection = FORWARD;
     public DcMotorSimple.Direction leftBackDirection = FORWARD;
     public DcMotorSimple.Direction rightFrontDirection = FORWARD;
     public DcMotorSimple.Direction rightBackDirection = FORWARD;
 
+    public PinpointParams pinpointParams;
+
     private static TuningParameter setUpRealRobot() {
         TuningParameter param = new TuningParameter();
 
-        param.DRIVE_CLASS = PinpointDrive.class;
+        param.DRIVE_CLASS = MecanumDrive.class;
+
+        param.usePinpointDevice = true;
+        param.pinpointParams = new PinpointParams();
+
         // IMU orientation
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
+        param.imuName = "pinpoint";
         param.logoFacingDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        param.usbFacingDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+        param.usbFacingDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
-        param.inPerTick = 1.0d / 25.4d / GoBildaPinpointDriverRR.goBILDA_4_BAR_POD ;
+        param.inPerTick = 1.0d / 25.4d / param.pinpointParams.encoderResolution;
         param.lateralInPerTick = param.inPerTick;
         param.trackWidthTicks = 0;
 
@@ -74,6 +83,7 @@ public class TuningParameter extends MecanumDrive.Params {
         // IMU orientation
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
+        param.imuName = "imu";
         param.logoFacingDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
         param.usbFacingDirection = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 

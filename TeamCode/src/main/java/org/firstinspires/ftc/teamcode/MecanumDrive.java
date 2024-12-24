@@ -28,6 +28,7 @@ import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
+import com.acmerobotics.roadrunner.ftc.PinpointDcMotorEx;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -40,6 +41,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
@@ -114,7 +117,7 @@ public class MecanumDrive {
 
     public LazyImu lazyImu;
 
-    public final Localizer localizer;
+    public Localizer localizer;
     public Pose2d pose;
 
     protected LinkedList<Pose2d> poseHistory = new LinkedList<>();
@@ -240,12 +243,51 @@ public class MecanumDrive {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+        lazyImu = new LazyImu(hardwareMap, TuningParameter.current.imuName, new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer();
+        if (TuningParameter.current.usePinpointDevice) {
+            GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,TuningParameter.current.pinpointParams.pinpointDeviceName);
+
+            hardwareMap.put("par",
+                    new PinpointDcMotorEx(pinpoint, false, DcMotorSimple.Direction.FORWARD, leftFront.getController()));
+            hardwareMap.put("perp",
+                    new PinpointDcMotorEx(pinpoint, true, DcMotorSimple.Direction.FORWARD, leftFront.getController()));
+
+            localizer = new TwoDeadWheelLocalizer(hardwareMap, lazyImu.get(), PARAMS.inPerTick);
+
+            pinpoint.setOffsets(TuningParameter.current.pinpointParams.xOffset, TuningParameter.current.pinpointParams.yOffset);
+
+            pinpoint.setEncoderResolution(TuningParameter.current.pinpointParams.encoderResolution);
+
+            pinpoint.setEncoderDirections(TuningParameter.current.pinpointParams.xDirection, TuningParameter.current.pinpointParams.yDirection);
+
+            /*
+            Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
+            The IMU will automatically calibrate when first powered on, but recalibrating before running
+            the robot is a good idea to ensure that the calibration is "good".
+            resetPosAndIMU will reset the position to 0,0,0 and also recalibrate the IMU.
+            This is recommended before you run your autonomous, as a bad initial calibration can cause
+            an incorrect starting value for x, y, and heading.
+             */
+            //pinpoint.recalibrateIMU();
+            pinpoint.resetPosAndIMU();
+            // wait for pinpoint to finish calibrating
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            // TODO Jeffrey: check here
+            Pose2D convertedPose2D = new Pose2D(DistanceUnit.MM, pose.position.x, pose.position.y, AngleUnit.RADIANS, pose.heading.real);
+            pinpoint.setPosition(convertedPose2D);
+
+
+        } else {
+            localizer = new DriveLocalizer();
+        }
 
         // FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
