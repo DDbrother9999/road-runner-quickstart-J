@@ -1,15 +1,7 @@
 package com.acmerobotics.roadrunner.ftc;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.jetbrains.annotations.NotNull;
 
 public class PinpointDcMotorEx extends DcMotorImplEx {
     private final GoBildaPinpointDriverRR pinpoint;
@@ -26,28 +18,22 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
     @Override
     public synchronized int getCurrentPosition() {
         this.pinpoint.update();
-        Pose2d absPose = this.pinpoint.getPositionRR();
-        Vector2d rotatedPosVector = absPose.position;
-        int pos = 0;
         if (this.usePerpendicular) {
-            pos = (int)rotatedPosVector.y; // QUESTION: double
+            return pinpoint.getEncoderY();
         } else {
-            pos = (int)rotatedPosVector.x; // QUESTION: double
+            return pinpoint.getEncoderX();
         }
-        return pos;
     }
 
     @Override
     public synchronized double getVelocity() {
-        this.pinpoint.update();
-        PoseVelocity2d absVel = this.pinpoint.getVelocityRR();
-        Vector2d rotatedVelVector = absVel.linearVel;
-        double vel = 0.0;
+        pinpoint.update();
+
         if (this.usePerpendicular) {
-            vel = (int)rotatedVelVector.y;
+            return pinpoint.getVelY() * pinpoint.getCurrentTicksPerMM();
         } else {
-            vel = (int)rotatedVelVector.x;
+            return pinpoint.getVelX() * pinpoint.getCurrentTicksPerMM();
         }
-        return vel;
+
     }
 }

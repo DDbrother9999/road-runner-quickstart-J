@@ -16,8 +16,8 @@ import com.acmerobotics.roadrunner.ftc.LateralPushTest;
 import com.acmerobotics.roadrunner.ftc.LateralRampLogger;
 import com.acmerobotics.roadrunner.ftc.ManualFeedforwardTuner;
 import com.acmerobotics.roadrunner.ftc.MecanumMotorDirectionDebugger;
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PinpointDcMotorEx;
-import com.acmerobotics.roadrunner.ftc.PinpointEncoder;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.nobles.robotics.HelloWorldAutoOpMode;
 import edu.nobles.robotics.TuningParameter;
 
 public final class TuningOpModes {
@@ -69,13 +68,11 @@ public final class TuningOpModes {
                 List<Encoder> parEncs = new ArrayList<>(), perpEncs = new ArrayList<>();
 
                 PinpointDcMotorEx parDc = new PinpointDcMotorEx(pd.pinpoint, false, DcMotorSimple.Direction.FORWARD, pd.leftBack.getController());
-                Encoder parEncoder = new RawEncoder(parDc);
-                parEncoder.setDirection(TuningParameter.current.parDirection);
+                Encoder parEncoder = new OverflowEncoder(new RawEncoder(parDc));
                 parEncs.add(parEncoder);
 
                 PinpointDcMotorEx perpDc = new PinpointDcMotorEx(pd.pinpoint, true, DcMotorSimple.Direction.FORWARD, pd.leftBack.getController());
-                Encoder perpEncoder = new RawEncoder(perpDc);
-                perpEncoder.setDirection(TuningParameter.current.perpDirection);
+                Encoder perpEncoder = new OverflowEncoder(new RawEncoder(perpDc));
                 perpEncs.add(perpEncoder);
 
                 return new DriveView(

@@ -39,10 +39,9 @@ public class PinpointDrive extends MecanumDrive {
         the tracking point the Y (strafe) odometry pod is: forward of the center is a positive number,
         backwards is a negative number.
          */
-        //These are tuned for 3110-0002-0001 Product Insight #1
-        // RR localizer note: These units are inches, presets are converted from mm (which is why they are inexact)
-        public double xOffset = -3.3071;
-        public double yOffset = -6.6142;
+        // These units are mm
+        public double xOffset = -90d;
+        public double yOffset = -165d;
 
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -61,8 +60,8 @@ public class PinpointDrive extends MecanumDrive {
         increase when you move the robot forward. And the Y (strafe) pod should increase when
         you move the robot to the left.
          */
-        public GoBildaPinpointDriver.EncoderDirection xDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
-        public GoBildaPinpointDriver.EncoderDirection yDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+        public GoBildaPinpointDriver.EncoderDirection xDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+        public GoBildaPinpointDriver.EncoderDirection yDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
 
         /*
         Use the pinpoint IMU for tuning
@@ -84,12 +83,13 @@ public class PinpointDrive extends MecanumDrive {
         pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class,PARAMS.pinpointDeviceName);
 
         if (PARAMS.usePinpointIMUForTuning) {
-            lazyImu = new LazyImu(hardwareMap, PARAMS.pinpointDeviceName, new RevHubOrientationOnRobot(zyxOrientation(0, 0, 0)));
+            lazyImu = new LazyImu(hardwareMap, PARAMS.pinpointDeviceName,
+//                    new RevHubOrientationOnRobot(
+//                            PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+                    new RevHubOrientationOnRobot(zyxOrientation(0, 0, 0)));
         }
 
-        // RR localizer note: don't love this conversion (change driver?)
-        pinpoint.setOffsets(DistanceUnit.MM.fromInches(PARAMS.xOffset), DistanceUnit.MM.fromInches(PARAMS.yOffset));
-
+        pinpoint.setOffsets(PARAMS.xOffset, PARAMS.yOffset);
 
         pinpoint.setEncoderResolution(PARAMS.encoderResolution);
 

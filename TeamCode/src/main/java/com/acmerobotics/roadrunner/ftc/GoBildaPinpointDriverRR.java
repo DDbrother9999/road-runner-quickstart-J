@@ -33,9 +33,11 @@ import org.jetbrains.annotations.NotNull;
 public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver implements IMU {
    @NotNull
    public static final Companion Companion = new Companion((DefaultConstructorMarker)null);
+
+   public static final float goBILDA_SWINGARM_POD = 13.26291192f; //ticks-per-mm for the goBILDA Swingarm Pod
+   public static final float goBILDA_4_BAR_POD    = 19.89436789f; //ticks-per-mm for the goBILDA 4-Bar Pod
+
    private float currentTicksPerMM;
-   public static final float goBILDA_SWINGARM_POD = 13.262912F;
-   public static final float goBILDA_4_BAR_POD = 19.894367F;
 
    public GoBildaPinpointDriverRR(@NotNull I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned) {
       super(deviceClient, deviceClientIsOwned);

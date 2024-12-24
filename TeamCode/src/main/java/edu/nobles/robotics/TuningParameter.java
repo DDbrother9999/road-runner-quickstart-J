@@ -1,5 +1,6 @@
 package edu.nobles.robotics;
 
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -21,9 +22,6 @@ public class TuningParameter extends MecanumDrive.Params {
     public DcMotorSimple.Direction rightFrontDirection = FORWARD;
     public DcMotorSimple.Direction rightBackDirection = FORWARD;
 
-    public DcMotorSimple.Direction parDirection;
-    public DcMotorSimple.Direction perpDirection;
-
     private static TuningParameter setUpRealRobot() {
         TuningParameter param = new TuningParameter();
 
@@ -35,13 +33,13 @@ public class TuningParameter extends MecanumDrive.Params {
         param.usbFacingDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         // drive model parameters
-        param.inPerTick = 1;
-        param.lateralInPerTick = 1;
+        param.inPerTick = 1.0d / 25.4d / GoBildaPinpointDriverRR.goBILDA_4_BAR_POD ;
+        param.lateralInPerTick = param.inPerTick;
         param.trackWidthTicks = 0;
 
         // feedforward parameters (in tick units)
-        param.kS = 0;
-        param.kV = 0;
+        param.kS = 3.187232340910811;
+        param.kV = 0.000002087201073368817;
         param.kA = 0;
 
         // path profile parameters (in inches)
@@ -64,9 +62,6 @@ public class TuningParameter extends MecanumDrive.Params {
 
         param.leftFrontDirection = REVERSE;
         param.leftBackDirection = REVERSE;
-
-        param.parDirection = REVERSE;
-        param.perpDirection = REVERSE;
 
         return param;
     }
