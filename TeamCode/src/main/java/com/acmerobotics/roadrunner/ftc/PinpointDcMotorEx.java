@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.ftc;
 
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
 
@@ -11,6 +12,8 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
     private final GoBildaPinpointDriverRR pinpoint;
 
     private final boolean usePerpendicular;
+
+    private double prevVel = 0.0;
 
     public PinpointDcMotorEx(GoBildaPinpointDriverRR pinpoint, boolean usePerpendicular, DcMotorController dummyController) {
         super(dummyController, 0, Direction.FORWARD);
@@ -38,12 +41,25 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
     @Override
     public synchronized double getVelocity() {
         // pinpoint.update();
-
+        double vel;
         if (this.usePerpendicular) {
-            return pinpoint.getVelY() * TuningParameter.current.pinpointParams.encoderResolution;
+            vel = pinpoint.getVelY() * TuningParameter.current.pinpointParams.encoderResolution;
+            vel = ((int) (vel / 20)) * 20.0;
+
+            if (Math.abs(prevVel - vel) > 0.1) {
+                RobotLog.i("Perp vel:" + vel);
+            }
+
         } else {
-            return pinpoint.getVelX() * TuningParameter.current.pinpointParams.encoderResolution;
+            vel = pinpoint.getVelX() * TuningParameter.current.pinpointParams.encoderResolution;
+            vel = ((int) (vel / 20)) * 20.0;
+
+            if (Math.abs(prevVel - vel) > 0.1) {
+                RobotLog.i("Par vel:" + vel);
+            }
         }
 
+        prevVel = vel;
+        return vel;
     }
 }

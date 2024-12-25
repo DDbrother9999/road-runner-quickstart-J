@@ -42,13 +42,14 @@ public class TuningParameter extends MecanumDrive.Params {
         param.usbFacingDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
+        // 0.0019789560019118
         param.inPerTick = 1.0d / 25.4d / param.pinpointParams.encoderResolution;
-        param.lateralInPerTick = param.inPerTick;
+        param.lateralInPerTick = 0.001623458773196117;
         param.trackWidthTicks = 0;
 
         // feedforward parameters (in tick units)
-        param.kS = 3.187232340910811;
-        param.kV = 0.000002087201073368817;
+        param.kS = 0.8413297455354614;
+        param.kV = 0.00036203672651163404;
         param.kA = 0;
 
         // path profile parameters (in inches)
