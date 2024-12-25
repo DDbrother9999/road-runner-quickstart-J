@@ -45,12 +45,12 @@ public class TuningParameter extends MecanumDrive.Params {
         // 0.0019789560019118
         param.inPerTick = 1.0d / 25.4d / param.pinpointParams.encoderResolution;
         param.lateralInPerTick = 0.001623458773196117;
-        param.trackWidthTicks = 0;
+        param.trackWidthTicks = 7479.9620110751885;
 
         // feedforward parameters (in tick units)
         param.kS = 0.8413297455354614;
         param.kV = 0.00036203672651163404;
-        param.kA = 0;
+        param.kA = 0.0001;
 
         // path profile parameters (in inches)
         param.maxWheelVel = 10;
@@ -62,9 +62,9 @@ public class TuningParameter extends MecanumDrive.Params {
         param.maxAngAccel = Math.PI;
 
         // path controller gains
-        param.axialGain = 0.0;
-        param.lateralGain = 0.0;
-        param.headingGain = 0.0; // shared with turn
+        param.axialGain = 3.0;
+        param.lateralGain = 1.0;
+        param.headingGain = 2.0; // shared with turn
 
         param.axialVelGain = 0.0;
         param.lateralVelGain = 0.0;
