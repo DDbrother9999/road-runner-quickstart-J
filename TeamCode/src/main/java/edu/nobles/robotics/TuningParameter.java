@@ -81,6 +81,9 @@ public class TuningParameter extends MecanumDrive.Params {
 
         param.DRIVE_CLASS = MecanumDrive.class;
 
+        param.usePinpointDevice = false;
+        param.pinpointParams = null;
+
         // IMU orientation
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting

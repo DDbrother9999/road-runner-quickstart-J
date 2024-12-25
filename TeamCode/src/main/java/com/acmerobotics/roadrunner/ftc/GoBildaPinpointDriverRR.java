@@ -48,6 +48,12 @@ public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver impleme
    }
 
    @NotNull
+   public AngularVelocity getRobotAngularVelocity(@NotNull AngleUnit angleUnit) {
+      return (new AngularVelocity(AngleUnit.RADIANS, 0.0F, 0.0F,
+              (float) this.getHeadingVelocity(), System.nanoTime())).toAngleUnit(angleUnit);
+   }
+
+   @NotNull
    public Orientation getRobotOrientation(@NotNull AxesReference reference, @NotNull AxesOrder order, @NotNull AngleUnit angleUnit) {
       return (new Orientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS, 0.0F, 0.0F,
               (float) this.getPosition().getHeading(AngleUnit.RADIANS), System.nanoTime()))
@@ -67,9 +73,5 @@ public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver impleme
       return eulerToQuaternion(this.getPosition().getHeading(AngleUnit.RADIANS));
    }
 
-   @NotNull
-   public AngularVelocity getRobotAngularVelocity(@NotNull AngleUnit angleUnit) {
-      return (new AngularVelocity(AngleUnit.RADIANS, 0.0F, 0.0F,
-              (float) this.getHeadingVelocity(), System.nanoTime())).toAngleUnit(angleUnit);
-   }
+
 }

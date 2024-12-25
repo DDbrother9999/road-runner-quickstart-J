@@ -22,6 +22,7 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
     @Override
     public synchronized int getCurrentPosition() {
         this.pinpoint.update();
+
         if (this.usePerpendicular) {
             return pinpoint.getEncoderY();
         } else {
@@ -33,7 +34,7 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
         } else {
             return (int)(pinpoint.getPosX() * TuningParameter.current.pinpointParams.encoderResolution);
         }
-         */
+        */
     }
 
     @Override
