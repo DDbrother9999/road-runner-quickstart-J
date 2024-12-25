@@ -169,6 +169,9 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
             String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
             telemetry.addData("Position", data);
 
+            data = String.format(Locale.US, "{encodeX: %d, encodeY: %d, x: %.3f, y:%.3f}", odo.getEncoderX(), odo.getEncoderY(), odo.getPosX(), odo.getPosY());
+            telemetry.addData("Raw Position", data);
+
             /*
             gets the current Velocity (x & y in mm/sec and heading in degrees/sec) and prints it.
              */

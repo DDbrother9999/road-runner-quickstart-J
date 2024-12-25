@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.nobles.robotics.PinpointParams;
 import edu.nobles.robotics.TuningParameter;
 
 @Config
@@ -248,20 +249,21 @@ public class MecanumDrive {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         if (TuningParameter.current.usePinpointDevice) {
-            GoBildaPinpointDriverRR pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class,TuningParameter.current.pinpointParams.pinpointDeviceName);
+            PinpointParams params = TuningParameter.current.pinpointParams;
+            GoBildaPinpointDriverRR pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class, params.pinpointDeviceName);
 
             hardwareMap.put("par",
-                    new PinpointDcMotorEx(pinpoint, false, DcMotorSimple.Direction.FORWARD, leftFront.getController()));
+                    new PinpointDcMotorEx(pinpoint, false, leftFront.getController()));
             hardwareMap.put("perp",
-                    new PinpointDcMotorEx(pinpoint, true, DcMotorSimple.Direction.FORWARD, leftFront.getController()));
+                    new PinpointDcMotorEx(pinpoint, true, leftFront.getController()));
 
             localizer = new TwoDeadWheelLocalizer(hardwareMap, lazyImu.get(), PARAMS.inPerTick);
 
-            pinpoint.setOffsets(TuningParameter.current.pinpointParams.xOffset, TuningParameter.current.pinpointParams.yOffset);
+            pinpoint.setOffsets(params.xOffset, params.yOffset);
 
-            pinpoint.setEncoderResolution(TuningParameter.current.pinpointParams.encoderResolution);
+            pinpoint.setEncoderResolution(params.encoderResolution);
 
-            pinpoint.setEncoderDirections(TuningParameter.current.pinpointParams.xDirection, TuningParameter.current.pinpointParams.yDirection);
+            pinpoint.setEncoderDirections(params.xDirection, params.yDirection);
 
             /*
             Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary

@@ -272,13 +272,9 @@ public class GoBildaPinpointDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSi
 
         if (xEncoderDirection == EncoderDirection.REVERSED) {
             xEncoderValue = -xEncoderValue;
-            xPosition = -xPosition;
-            xVelocity = -xVelocity;
         }
         if (yEncoderDirection == EncoderDirection.REVERSED) {
             yEncoderValue = -yEncoderValue;
-            yPosition = -yPosition;
-            yVelocity = -yVelocity;
         }
     }
 

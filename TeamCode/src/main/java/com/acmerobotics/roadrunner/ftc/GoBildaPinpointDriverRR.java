@@ -1,17 +1,11 @@
 package com.acmerobotics.roadrunner.ftc;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Rotation2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
-import kotlin.Metadata;
-import kotlin.NotImplementedError;
-import kotlin.jvm.internal.DefaultConstructorMarker;
-import kotlin.jvm.internal.Intrinsics;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -31,9 +25,6 @@ import org.jetbrains.annotations.NotNull;
    description = "goBILDA® Pinpoint Odometry Computer (IMU Sensor Fusion for 2 Wheel Odometry)"
 )
 public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver implements IMU {
-   @NotNull
-   public static final Companion Companion = new Companion((DefaultConstructorMarker)null);
-
    public GoBildaPinpointDriverRR(@NotNull I2cDeviceSynchSimple deviceClient, boolean deviceClientIsOwned) {
       super(deviceClient, deviceClientIsOwned);
    }
@@ -80,15 +71,5 @@ public final class GoBildaPinpointDriverRR extends GoBildaPinpointDriver impleme
    public AngularVelocity getRobotAngularVelocity(@NotNull AngleUnit angleUnit) {
       return (new AngularVelocity(AngleUnit.RADIANS, 0.0F, 0.0F,
               (float) this.getHeadingVelocity(), System.nanoTime())).toAngleUnit(angleUnit);
-   }
-
-   public static final class Companion {
-      private Companion() {
-      }
-
-      // $FF: synthetic method
-      public Companion(DefaultConstructorMarker $constructor_marker) {
-         this();
-      }
    }
 }

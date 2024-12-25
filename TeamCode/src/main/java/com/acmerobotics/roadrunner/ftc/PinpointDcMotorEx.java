@@ -12,11 +12,10 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
 
     private final boolean usePerpendicular;
 
-    public PinpointDcMotorEx(GoBildaPinpointDriverRR pinpoint, boolean usePerpendicular, Direction direction, DcMotorController dummyController) {
-        super(dummyController, 0, direction);
+    public PinpointDcMotorEx(GoBildaPinpointDriverRR pinpoint, boolean usePerpendicular, DcMotorController dummyController) {
+        super(dummyController, 0, Direction.FORWARD);
         this.pinpoint = pinpoint;
         this.usePerpendicular = usePerpendicular;
-        this.direction = direction;
     }
 
     @Override
@@ -27,11 +26,18 @@ public class PinpointDcMotorEx extends DcMotorImplEx {
         } else {
             return pinpoint.getEncoderX();
         }
+        /*
+        if (this.usePerpendicular) {
+            return (int)(pinpoint.getPosY() * TuningParameter.current.pinpointParams.encoderResolution);
+        } else {
+            return (int)(pinpoint.getPosX() * TuningParameter.current.pinpointParams.encoderResolution);
+        }
+         */
     }
 
     @Override
     public synchronized double getVelocity() {
-        pinpoint.update();
+        // pinpoint.update();
 
         if (this.usePerpendicular) {
             return pinpoint.getVelY() * TuningParameter.current.pinpointParams.encoderResolution;
