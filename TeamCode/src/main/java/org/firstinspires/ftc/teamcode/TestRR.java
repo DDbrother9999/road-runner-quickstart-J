@@ -23,13 +23,20 @@ public final class TestRR extends LinearOpMode {
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-            Action simpleSpline = drive.actionBuilder(beginPose)
-                    .splineTo(new Vector2d(30, 30), Math.PI / 2)
-                    .splineTo(new Vector2d(0, 60), Math.PI)
-                    .build();
             waitForStart();
-            Actions.runBlocking(
-                    simpleSpline);
+
+            int i=0;
+            while(i<5) {
+                Action simpleSpline = drive.actionBuilder(beginPose)
+                        .splineTo(new Vector2d(30, 22), 0)
+                        .strafeTo(new Vector2d(0, 0))
+                        .build();
+                Actions.runBlocking(
+                        simpleSpline);
+                Actions.SleepAction();
+
+                i++;
+            }
         }
         else {
             throw new RuntimeException();
