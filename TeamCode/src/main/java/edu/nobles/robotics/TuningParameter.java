@@ -53,7 +53,7 @@ public class TuningParameter extends MecanumDrive.Params {
         param.kA = 0.0001;
 
         // path profile parameters (in inches)
-        param.maxWheelVel = 10;
+        param.maxWheelVel = 20;
         param.minProfileAccel = -6;
         param.maxProfileAccel = 10;
 
