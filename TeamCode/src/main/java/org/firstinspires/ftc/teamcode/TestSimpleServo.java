@@ -7,14 +7,12 @@ import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @Config
 
 @TeleOp
-public class testSimpleServo extends LinearOpMode {
+public class TestSimpleServo extends LinearOpMode {
 
     public static int slowdown = 2;
     public static int aTurnTo = 150;
