@@ -27,10 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.nobles.robotics;
+package edu.nobles.robotics.device;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -59,6 +58,8 @@ public class ConceptScanServo extends LinearOpMode {
     static final double MAX_POS     =  2.0;     // Maximum rotational position
     static final double MIN_POS     =  -1.0;     // Minimum rotational position
 
+    static final double END_POS     =  0.6;
+
     // Define class members
     Servo   servo;
     double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
@@ -79,6 +80,7 @@ public class ConceptScanServo extends LinearOpMode {
         waitForStart();
 
         position = servo.getPosition();
+        servo.setPosition(END_POS);
 
         // Scan servo till stop pressed.
         while(opModeIsActive()){
@@ -111,6 +113,8 @@ public class ConceptScanServo extends LinearOpMode {
             sleep(CYCLE_MS);
             // idle();
         }
+
+        servo.setPosition(END_POS);
 
         // Signal done;
         telemetry.addData(">", "Done");
