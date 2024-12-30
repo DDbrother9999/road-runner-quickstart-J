@@ -1,4 +1,4 @@
-package edu.nobles.robotics.device;
+package edu.nobles.robotics.servo;
 
 import androidx.annotation.NonNull;
 
