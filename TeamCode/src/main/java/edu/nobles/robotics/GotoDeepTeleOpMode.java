@@ -8,6 +8,8 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.nobles.robotics.servo.ServoDevice;
+import edu.nobles.robotics.servo.ServoDevice.RotateServoAction;
 
 @TeleOp
 @Config
@@ -39,10 +42,15 @@ public class GotoDeepTeleOpMode extends LinearOpMode {
 
         ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
 
+        GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
+        GamepadEx gamepadEx2 = new GamepadEx(gamepad2);
+
         waitForStart();
 
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
+            gamepadEx1.readButtons();
+            gamepadEx2.readButtons();
 
             // updated based on gamepads
             drive.setDrivePowers(new PoseVelocity2d(
@@ -53,12 +61,13 @@ public class GotoDeepTeleOpMode extends LinearOpMode {
                     -gamepad1.right_stick_x * headThrottle
             ));
 
-            if (gamepad1.a) {
-                if (runningActions.stream().noneMatch(a -> a instanceof ServoDevice.RotateServoAction)) {
-                    RobotLog.i("Add Flip action");
-                    runningActions.add(flipServo.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
-                    flipFlat = !flipFlat;
-                }
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
+                RobotLog.i("Add Flip action");
+                // Remove current Flip action
+                runningActions.removeIf(a -> a instanceof RotateServoAction
+                        && flipServo.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
+                runningActions.add(flipServo.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
+                flipFlat = !flipFlat;
             }
 
             // update running actions

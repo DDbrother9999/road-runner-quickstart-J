@@ -30,6 +30,10 @@ public class ServoDevice {
         this.telemetry = telemetry;
     }
 
+    public String getDeviceName() {
+        return deviceName;
+    }
+
     /**
      * Unit is Degree
      */
@@ -44,6 +48,10 @@ public class ServoDevice {
         public RotateServoAction(double toDegree) {
             this.toDegree = toDegree;
             nextActionTime = System.currentTimeMillis();
+        }
+
+        public String getDeviceName() {
+            return deviceName;
         }
 
         @Override
