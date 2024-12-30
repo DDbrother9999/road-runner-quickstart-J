@@ -10,12 +10,15 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.nobles.robotics.servo.ServoDevice;
 
 @TeleOp
 @Config
@@ -26,11 +29,15 @@ public class GotoDeepTeleOpMode extends LinearOpMode {
 
     private List<Action> runningActions = new ArrayList<>();
 
+    private boolean flipFlat = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+
+        ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
 
         waitForStart();
 
@@ -45,6 +52,14 @@ public class GotoDeepTeleOpMode extends LinearOpMode {
                     ),
                     -gamepad1.right_stick_x * headThrottle
             ));
+
+            if (gamepad1.a) {
+                if (runningActions.stream().noneMatch(a -> a instanceof ServoDevice.RotateServoAction)) {
+                    RobotLog.i("Add Flip action");
+                    runningActions.add(flipServo.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
+                    flipFlat = !flipFlat;
+                }
+            }
 
             // update running actions
             if (!runningActions.isEmpty()) {

@@ -30,6 +30,13 @@ public class ServoDevice {
         this.telemetry = telemetry;
     }
 
+    /**
+     * Unit is Degree
+     */
+    public double getAngle() {
+        return servo.getAngle();
+    }
+
     public class RotateServoAction implements Action {
         double toDegree;
         long nextActionTime;
