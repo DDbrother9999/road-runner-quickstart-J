@@ -30,6 +30,7 @@
 package edu.nobles.robotics.servo;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -50,7 +51,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 @Config
 @TeleOp(name = "Concept: Scan Servo", group = "Concept")
-// @Disabled
+@Disabled
 public class ConceptScanServo extends LinearOpMode {
 
     static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle

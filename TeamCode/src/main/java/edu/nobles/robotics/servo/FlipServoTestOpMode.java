@@ -15,7 +15,7 @@ public class FlipServoTestOpMode  extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        FlipServo flipServo = new FlipServo(hardwareMap, telemetry);
+        ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -23,9 +23,9 @@ public class FlipServoTestOpMode  extends LinearOpMode {
         while (opModeIsActive()) {
             Actions.runBlocking(
                     new SequentialAction(
-                            flipServo.rotate(FlipServo.initDegree),
+                            flipServo.rotate(ServoDevice.flip0_InitDegree),
                             new SleepAction(5),
-                            flipServo.rotate(FlipServo.flatDegree),
+                            flipServo.rotate(ServoDevice.flip0_FlatDegree),
                             new SleepAction(5)
                     )
             );

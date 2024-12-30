@@ -13,26 +13,28 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Config
-public class FlipServo {
+public class ServoDevice {
     public static long sleepMillSecond = 100;
-    public static double degreeStep = 3;
-    public static double initDegree = 0;
-    public static double flatDegree = 90;
 
-    private SimpleServo fliper;
+    public static double flip0_DegreeStep = 3; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
+    public static double flip0_InitDegree = 0;
+    public static double flip0_FlatDegree = 90;
 
-    private Telemetry telemetry;
+    private final String deviceName;
+    private final SimpleServo servo;
+    private final Telemetry telemetry;
 
-    public FlipServo(HardwareMap hardwareMap, Telemetry telemetry) {
-        fliper = new SimpleServo(hardwareMap, "flip0", 0, 180, AngleUnit.DEGREES);
+    public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
+        this.deviceName = deviceName;
+        servo = new SimpleServo(hardwareMap, deviceName, 0, 180, AngleUnit.DEGREES);
         this.telemetry = telemetry;
     }
 
-    public class RotateFlipAction implements Action {
+    public class RotateServoAction implements Action {
         double toDegree;
         long nextActionTime;
 
-        public RotateFlipAction(double toDegree) {
+        public RotateServoAction(double toDegree) {
             this.toDegree = toDegree;
             nextActionTime = System.currentTimeMillis();
         }
@@ -40,34 +42,31 @@ public class FlipServo {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             long currentTime = System.currentTimeMillis();
-            if(nextActionTime > currentTime) {
+            if (nextActionTime > currentTime) {
                 return true;
             }
             nextActionTime = currentTime + sleepMillSecond;
 
-            double current = fliper.getAngle();
-            packet.put("Flip Current Position", current);
-            packet.put("Flip To Position", toDegree);
-            telemetry.addData("Flip Current Position:",current);
-            telemetry.addData("Flip To Position:",toDegree);
+            double current = servo.getAngle();
 
-            RobotLog.i("Flip Current Position: %f", current);
-            RobotLog.i("Flip To Position: %f", toDegree);
+            telemetry.addData(deviceName + " Current Position:", current);
+            telemetry.addData(deviceName + " To Position:", toDegree);
+
+            RobotLog.i(deviceName + " Current Position: %.1f, To: %.1f", current, toDegree);
 
             if (Math.abs(current - toDegree) <= 1) {
-                packet.addLine("Flip Stop");
-                RobotLog.i("Flip Stop");
-                telemetry.addLine("Flip Stop");
+                RobotLog.i(deviceName + " Stop");
+                telemetry.addLine(deviceName + " Stop");
                 telemetry.update();
                 return false;
             }
             telemetry.update();
 
-            if (Math.abs(current - toDegree) <= degreeStep) {
-                fliper.turnToAngle(toDegree);
+            if (Math.abs(current - toDegree) <= flip0_DegreeStep) {
+                servo.turnToAngle(toDegree);
             } else {
                 int sign = toDegree > current ? 1 : -1;
-                fliper.rotateByAngle( degreeStep *  sign);
+                servo.rotateByAngle(flip0_DegreeStep * sign);
             }
 
             return true;
@@ -75,6 +74,6 @@ public class FlipServo {
     }
 
     public Action rotate(double toDegree) {
-        return new RotateFlipAction(toDegree);
+        return new RotateServoAction(toDegree);
     }
 }
