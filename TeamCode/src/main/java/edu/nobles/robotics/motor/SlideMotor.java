@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.ElevatorFeedforward;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
@@ -19,9 +20,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @Config
 public class SlideMotor {
 
-    public static double target;
+    //Position Controller
     public static double kP = 0.05;
+
+    //Feedforward
+    public static double kS = 1; //static friction
+    public static double kV = 0; //velocity
+    public static double kA = 0; //acceleration
+
     public static double positionTolerance = 15;   // allowed maximum error
+
     public static int extendLimit = 1000; //position at full extension
     public static int retractLimit = 0; //position at full retraction
 
@@ -33,14 +41,13 @@ public class SlideMotor {
 
     public SlideMotor(String deviceName, HardwareMap hardwareMap, Telemetry telemetry, boolean isInverted) {
         this.deviceName = deviceName;
-        slideMotor = new MotorEx(hardwareMap, "motorOne");
+        slideMotor = new MotorEx(hardwareMap, deviceName);
 
         this.telemetry = telemetry;
         slideMotor.setInverted(isInverted);
         slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         slideMotor.resetEncoder();
         encoder = slideMotor.encoder;
-        slideMotor.setRunMode(Motor.RunMode.PositionControl);
         slideMotor.setPositionCoefficient(kP);
         slideMotor.set(0);
         slideMotor.setPositionTolerance(positionTolerance); // allowed maximum error
@@ -63,19 +70,84 @@ public class SlideMotor {
 
     //Universal MoveSlide Action (doesn't care about direction)
 
-    public class MoveSlide implements Action {
+    public class PosMoveSlideAction implements Action {
         int targetPosition;    //int for desired tick count
-        long nextActionTime;
         double maxPower;
 
         double lastPowerSet = 0;
 
-        int direction;
 
-        public MoveSlide(int targetPosition, double maxPower) {
+        public PosMoveSlideAction(int targetPosition, double maxPower) {
             this.targetPosition = targetPosition;
             this.maxPower = maxPower;
+            slideMotor.setRunMode(Motor.RunMode.PositionControl);
 
+            slideMotor.setTargetPosition(targetPosition);
+        }
+
+        public String getDeviceName() {
+            return deviceName;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+            double current = slideMotor.getCurrentPosition();
+
+            telemetry.addData(deviceName + " Last Power Set:", lastPowerSet);
+            telemetry.addData(deviceName + " Current Position:", current);
+            telemetry.addData(deviceName + " To Position:", targetPosition);
+
+            RobotLog.i(deviceName + " Current Position: %.1f, To: %d", current, targetPosition);
+
+            if (slideMotor.atTargetPosition()) {
+                slideMotor.stopMotor();
+
+                RobotLog.i(deviceName + " Stop");
+                telemetry.addLine(deviceName + " Stop");
+                telemetry.update();
+                return false;
+            }
+            telemetry.update();
+
+            //adjusts for direction
+            double motorPower;
+            if(targetPosition>current){
+                motorPower = maxPower;
+            }
+            else{
+                motorPower= -maxPower;
+            }
+            slideMotor.set(motorPower);
+
+            /*
+            Basic cache to prevent repeats
+
+            if (lastPowerSet != motorPower) {
+                slideMotor.set(motorPower);
+                lastPowerSet=motorPower;
+            }
+
+             */
+
+            return true;
+        }
+    }
+
+
+    public class FFPosMoveSlide implements Action {
+        int targetPosition;    //int for desired tick count
+        double maxPower;
+
+        double lastPowerSet = 0;
+
+        public FFPosMoveSlide(int targetPosition, double maxPower) {
+            this.targetPosition = targetPosition;
+            this.maxPower = maxPower;
+            slideMotor.setRunMode(Motor.RunMode.PositionControl);
+
+            SimpleMotorFeedforward feedforward =
+                    new SimpleMotorFeedforward(kS, kV, kA);
         }
 
         public String getDeviceName() {
@@ -122,7 +194,7 @@ public class SlideMotor {
         }
     }
 
-    public Action MoveSlide(int targetPosition, double maxPower) {
-        return new edu.nobles.robotics.motor.SlideMotor.MoveSlide(targetPosition, maxPower);
+    public Action PosMoveSlide(int targetPosition, double maxPower) {
+        return new edu.nobles.robotics.motor.SlideMotor.PosMoveSlideAction(targetPosition, maxPower);
     }
 }

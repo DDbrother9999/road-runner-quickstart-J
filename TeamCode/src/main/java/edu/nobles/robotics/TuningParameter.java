@@ -10,8 +10,8 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
 public class TuningParameter extends MecanumDrive.Params {
 
-    public static TuningParameter current = setUpRealRobot();
-    // public static TuningParameter current = setUpFirstTestingRobot();
+    // public static TuningParameter current = setUpRealRobot();
+    public static TuningParameter current = setUpFirstTestingRobot();
 
     public Class<?> DRIVE_CLASS;
 
