@@ -22,7 +22,9 @@ public class SlideMotor {
     public static double target;
     public static double kP = 0.05;
     public static double positionTolerance = 15;   // allowed maximum error
-    public static int fullExtend = 1000; //distance to full extension
+    public static int extendLimit = 1000; //position at full extension
+    public static int retractLimit = 0; //position at full retraction
+
 
     private final String deviceName;
     private final MotorEx slideMotor;
