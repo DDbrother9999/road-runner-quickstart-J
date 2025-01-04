@@ -107,32 +107,29 @@ public class SlideMotor {
                 RobotLog.i(deviceName + " Stop");
                 telemetry.addLine(deviceName + " Stop");
                 telemetry.update();
+                lastPowerSet = 0;
                 return false;
             }
             telemetry.update();
 
-            //adjusts for direction
-            double motorPower;
-            if(targetPosition>current){
-                motorPower = maxPower;
-            }
-            else{
-                motorPower= -maxPower;
-            }
 
-            slideMotor.set(motorPower);
-            lastPowerSet = motorPower;
+            slideMotor.set(maxPower);
 
-            RobotLog.i(deviceName + " motorPower: " + motorPower);
             /*
             Basic cache to prevent repeats
 
-            if (lastPowerSet != motorPower) {
-                slideMotor.set(motorPower);
-                lastPowerSet=motorPower;
+            if (lastPowerSet != maxPower) {
+                slideMotor.set(maxPower);
+                lastPowerSet=maxPower;
             }
 
              */
+
+            RobotLog.i(deviceName + " maxPower: " + maxPower);
+            double corrected = slideMotor.getCorrectedVelocity();
+            RobotLog.i(deviceName + " corrected: " + corrected);
+
+
 
             return true;
         }

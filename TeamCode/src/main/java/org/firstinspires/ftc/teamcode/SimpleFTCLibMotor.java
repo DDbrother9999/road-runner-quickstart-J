@@ -35,6 +35,8 @@ public class SimpleFTCLibMotor extends LinearOpMode {
         slideMotor.set(0);
         slideMotor.setPositionTolerance(15);
 
+        slideMotor.setTargetPosition(10000);
+
         waitForStart();
 
         if (isStopRequested()) return;
@@ -44,14 +46,22 @@ public class SimpleFTCLibMotor extends LinearOpMode {
             double power = gamepadEx1.getLeftY();
 
             slideMotor.set(power);
-
-
             int current = slideMotor.getCurrentPosition();
 
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
+            if (gamepadEx1.isDown(GamepadKeys.Button.A)) {
                 RobotLog.i(" Current Position: " + current);
                 RobotLog.i("Motor Power: " + power);
                 RobotLog.i("Motor Power: " + gamepadEx1.getLeftY());
+                RobotLog.i("At target position: " + slideMotor.atTargetPosition());
+            }
+
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X)) {
+                slideMotor.setTargetPosition(0);
+                RobotLog.i("Target position:  " + 0);
+            }
+            else if(gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)){
+                    slideMotor.setTargetPosition(10000);
+                    RobotLog.i("Target position:  " + 10000);
             }
 
         }
