@@ -11,7 +11,7 @@ public class SimpleMotor extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor motorSlide0 = hardwareMap.dcMotor.get("motorSlide0");
+        DcMotor motorSlide0 = hardwareMap.dcMotor.get("backLeft");
 
         waitForStart();
 

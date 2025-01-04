@@ -37,7 +37,7 @@ public class SlideMotor {
     private final String deviceName;
     private final MotorEx slideMotor;
     private final Telemetry telemetry;
-    private final MotorEx.Encoder encoder;
+    private  MotorEx.Encoder encoder;
 
     public SlideMotor(String deviceName, HardwareMap hardwareMap, Telemetry telemetry, boolean isInverted) {
         this.deviceName = deviceName;
@@ -48,6 +48,8 @@ public class SlideMotor {
         slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         slideMotor.resetEncoder();
         encoder = slideMotor.encoder;
+
+        slideMotor.setRunMode(Motor.RunMode.PositionControl);
         slideMotor.setPositionCoefficient(kP);
         slideMotor.set(0);
         slideMotor.setPositionTolerance(positionTolerance); // allowed maximum error
@@ -75,12 +77,9 @@ public class SlideMotor {
         double maxPower;
 
         double lastPowerSet = 0;
-
-
         public PosMoveSlideAction(int targetPosition, double maxPower) {
             this.targetPosition = targetPosition;
             this.maxPower = maxPower;
-            slideMotor.setRunMode(Motor.RunMode.PositionControl);
 
             slideMotor.setTargetPosition(targetPosition);
         }
@@ -92,13 +91,15 @@ public class SlideMotor {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            double current = slideMotor.getCurrentPosition();
+            int current = slideMotor.getCurrentPosition();
 
             telemetry.addData(deviceName + " Last Power Set:", lastPowerSet);
             telemetry.addData(deviceName + " Current Position:", current);
             telemetry.addData(deviceName + " To Position:", targetPosition);
 
-            RobotLog.i(deviceName + " Current Position: %.1f, To: %d", current, targetPosition);
+            RobotLog.i(deviceName + " Last Power Set " + lastPowerSet);
+            RobotLog.i(deviceName + " Current Position: " + current);
+            RobotLog.i(deviceName + " To Position: " + targetPosition);
 
             if (slideMotor.atTargetPosition()) {
                 slideMotor.stopMotor();
@@ -118,8 +119,11 @@ public class SlideMotor {
             else{
                 motorPower= -maxPower;
             }
-            slideMotor.set(motorPower);
 
+            slideMotor.set(motorPower);
+            lastPowerSet = motorPower;
+
+            RobotLog.i(deviceName + " motorPower: " + motorPower);
             /*
             Basic cache to prevent repeats
 
@@ -134,65 +138,6 @@ public class SlideMotor {
         }
     }
 
-
-    public class FFPosMoveSlide implements Action {
-        int targetPosition;    //int for desired tick count
-        double maxPower;
-
-        double lastPowerSet = 0;
-
-        public FFPosMoveSlide(int targetPosition, double maxPower) {
-            this.targetPosition = targetPosition;
-            this.maxPower = maxPower;
-            slideMotor.setRunMode(Motor.RunMode.PositionControl);
-
-            SimpleMotorFeedforward feedforward =
-                    new SimpleMotorFeedforward(kS, kV, kA);
-        }
-
-        public String getDeviceName() {
-            return deviceName;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-
-            double current = slideMotor.getCurrentPosition();
-
-            telemetry.addData(deviceName + " Last Power Set:", lastPowerSet);
-            telemetry.addData(deviceName + " Current Position:", current);
-            telemetry.addData(deviceName + " To Position:", targetPosition);
-
-            RobotLog.i(deviceName + " Current Position: %.1f, To: %.1f", current, targetPosition);
-
-            if (slideMotor.atTargetPosition()) {
-                slideMotor.stopMotor();
-
-                RobotLog.i(deviceName + " Stop");
-                telemetry.addLine(deviceName + " Stop");
-                telemetry.update();
-                return false;
-            }
-            telemetry.update();
-
-            //adjusts for direction
-            double motorPower;
-            if(targetPosition>current){
-                motorPower = maxPower;
-            }
-            else{
-                motorPower=-maxPower;
-            }
-
-            //Basic cache to prevent repeats
-            if (lastPowerSet != motorPower) {
-                slideMotor.set(motorPower);
-                lastPowerSet=motorPower;
-            }
-
-            return true;
-        }
-    }
 
     public Action PosMoveSlide(int targetPosition, double maxPower) {
         return new edu.nobles.robotics.motor.SlideMotor.PosMoveSlideAction(targetPosition, maxPower);

@@ -68,10 +68,10 @@ public class SimpleMotorAction extends LinearOpMode {
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
                 RobotLog.i("Add extend action");
-                // Remove current Flip action
+                // Remove current extend action
                 runningActions.removeIf(a -> a instanceof PosMoveSlideAction
                         && motorSlide0.getDeviceName().equals(((PosMoveSlideAction) a).getDeviceName()));
-                runningActions.add(motorSlide0.PosMoveSlide(extended ? 0 : 2000, 0.5));
+                runningActions.add(motorSlide0.PosMoveSlide(extended ? 0 : 2000, 0.25));
                 extended=!extended;
             }
 

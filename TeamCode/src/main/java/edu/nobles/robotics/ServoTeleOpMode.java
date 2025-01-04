@@ -25,7 +25,7 @@ import edu.nobles.robotics.servo.ServoDevice.RotateServoAction;
 
 @TeleOp
 @Config
-public class GotoDeepTeleOpMode extends LinearOpMode {
+public class ServoTeleOpMode extends LinearOpMode {
     public static double xThrottle = 0.4;
     public static double yThrottle = 0.4;
     public static double headThrottle = 0.05;
