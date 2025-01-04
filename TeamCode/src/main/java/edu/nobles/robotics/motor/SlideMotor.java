@@ -128,8 +128,7 @@ public class SlideMotor {
             RobotLog.i(deviceName + " maxPower: " + maxPower);
             double corrected = slideMotor.getCorrectedVelocity();
             RobotLog.i(deviceName + " corrected: " + corrected);
-
-
+            RobotLog.i(deviceName + " power: " + slideMotor.motorEx.getPower());
 
             return true;
         }
