@@ -7,6 +7,9 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -14,19 +17,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Config
 public class ServoDevice {
-    public static long sleepMillSecond = 100;
+    public static long sleepMillSecond = 10;
 
-    public static double flip0_DegreeStep = 3; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
+    public static double flip0_DegreeStep = 1; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
     public static double flip0_InitDegree = 0;
-    public static double flip0_FlatDegree = 90;
+    public static double flip0_FlatDegree = 150;
+
+    public static double lowPWM = 2000;
+    public static double hiPWM = 2500;
 
     private final String deviceName;
     private final SimpleServo servo;
     private final Telemetry telemetry;
 
+
+
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         this.deviceName = deviceName;
-        servo = new SimpleServo(hardwareMap, deviceName, 0, 180, AngleUnit.DEGREES);
+        servo = new SimpleServo(hardwareMap, deviceName, 0, 300, AngleUnit.DEGREES);
+        ServoImplEx servoTemp;
+        servoTemp = (ServoImplEx)hardwareMap.get(Servo.class, deviceName);
+
+        servoTemp.setPwmRange(new PwmControl.PwmRange(lowPWM, hiPWM));
         this.telemetry = telemetry;
     }
 
