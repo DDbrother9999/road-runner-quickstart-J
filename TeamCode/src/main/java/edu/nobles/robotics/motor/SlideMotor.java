@@ -35,18 +35,17 @@ public class SlideMotor {
 
 
     private String deviceName;
-    private MotorEx slideMotor;
+    private Motor slideMotor;
     private Telemetry telemetry;
-    private  MotorEx.Encoder encoder;
+    private  Motor.Encoder encoder;
 
-    public SlideMotor(MotorEx inSlideMotor, Telemetry telemetry, boolean isInverted) {
+    public SlideMotor(Motor inSlideMotor, Telemetry telemetry, String deviceName) {
         slideMotor = inSlideMotor;
-        deviceName = slideMotor.getDeviceType();
+        this.deviceName = slideMotor.getDeviceType();
 
         encoder = slideMotor.encoder;
 
         this.telemetry = telemetry;
-        slideMotor.setInverted(isInverted);
         slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         slideMotor.stopAndResetEncoder();
 
@@ -54,10 +53,6 @@ public class SlideMotor {
         slideMotor.setPositionCoefficient(kP);
         slideMotor.set(0);
         slideMotor.setPositionTolerance(positionTolerance); // allowed maximum error
-    }
-
-    public boolean getInverted(){
-        return slideMotor.getInverted();
     }
 
     public String getDeviceName() {
@@ -129,7 +124,7 @@ public class SlideMotor {
             RobotLog.i(deviceName + " maxPower: " + maxPower);
             double corrected = slideMotor.getCorrectedVelocity();
             RobotLog.i(deviceName + " corrected: " + corrected);
-            RobotLog.i(deviceName + " power: " + slideMotor.motorEx.getPower());
+            RobotLog.i(deviceName + " power: " + slideMotor.get());
 
             return true;
         }

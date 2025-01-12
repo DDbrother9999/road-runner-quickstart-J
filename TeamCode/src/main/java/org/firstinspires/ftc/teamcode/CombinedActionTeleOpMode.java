@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.nobles.robotics.motor.SlideMotor;
+import edu.nobles.robotics.parameters.ParameterManager;
 import edu.nobles.robotics.servo.ServoDevice;
 import edu.nobles.robotics.servo.ServoDevice.RotateServoAction;
 
@@ -34,6 +35,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     private boolean flipFlat = false;
 
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -41,12 +43,21 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
 
-        SlideMotor vertSlideLeftUp = new SlideMotor("vertSlideLeftUp", hardwareMap, telemetry, false);
-        SlideMotor vertSlideRightUp = new SlideMotor("vertSlideRightUp", hardwareMap, telemetry, false);
-        MotorGroup vertSlideUp = new MotorGroup(new MotorEx(hardwareMap, "vertSlideLeftUp"), new MotorEx(hardwareMap,"vertSlideRightUp"));
+        // HANDLE INVERTED MOTORS HERE
+        MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp");
+        MotorEx vertSlideRightUp = new MotorEx(hardwareMap, "vertSlideRightUp");
+        MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, "vertSlideLeftDown");
+        MotorEx vertSlideRightDown = new MotorEx(hardwareMap, "vertSlideRightDown");
 
-        SlideMotor vertSlideLeftDown = new SlideMotor("vertSlideLeftDown", hardwareMap, telemetry, false);
 
+        //DON'T INVERT MOTORS AFTER HERE
+        MotorGroup vertSlideUpGroup = new MotorGroup(vertSlideLeftUp, vertSlideRightUp);
+        MotorGroup vertSlideDownGroup = new MotorGroup(vertSlideLeftDown, vertSlideRightDown);
+
+        SlideMotor vertSlideUp = new SlideMotor(vertSlideUpGroup, telemetry, "vertSlideUp");
+        SlideMotor vertSlideDown = new SlideMotor(vertSlideDownGroup, telemetry, "vertSlideDown");
+
+        //GAMEPADS
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
         GamepadEx gamepadEx2 = new GamepadEx(gamepad2);
 
@@ -77,17 +88,24 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
                 RobotLog.i("Add extend action");
-                // Remove current extend action
+                // Remove current actions on motors
                 runningActions.removeIf(a -> a instanceof SlideMotor.PosMoveSlideAction
-                        && vertSlideLeftUp.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
-                runningActions.add(vertSlideLeftUp.PosMoveSlide(2000, 0.25));
+                        && vertSlideUp.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
+                runningActions.removeIf(a -> a instanceof SlideMotor.PosMoveSlideAction
+                        && vertSlideDown.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
+
+                runningActions.add(vertSlideUp.PosMoveSlide(ParameterManager.targetVertUpExtend, ParameterManager.maxVertUpPower));
+                runningActions.add(vertSlideDown.PosMoveSlide(ParameterManager.targetVertDownExtend, ParameterManager.maxVertUpPower));
             }
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X)) {
                 RobotLog.i("Add retract action");
-                // Remove current extend action
+                // Remove current actions on motors
                 runningActions.removeIf(a -> a instanceof SlideMotor.PosMoveSlideAction
-                        && vertSlideLeftUp.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
-                runningActions.add(vertSlideLeftUp.PosMoveSlide(2000, 0.25));
+                        && vertSlideUp.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
+                runningActions.removeIf(a -> a instanceof SlideMotor.PosMoveSlideAction
+                        && vertSlideDown.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
+                runningActions.add(vertSlideUp.PosMoveSlide(ParameterManager.targetVertUpRetract, ParameterManager.maxVertUpPower));
+                runningActions.add(vertSlideDown.PosMoveSlide(ParameterManager.targetVertDownRetract, ParameterManager.maxVertDownPower));
             }
 
             // update running actions
@@ -121,5 +139,12 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         packet.fieldOverlay().setStroke("#3F51B5");
         Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
+    }
+
+
+    //UNUSED
+    private void removePreviousActionSlideMotor(Action action, SlideMotor slideMotor){
+        runningActions.removeIf(a -> a instanceof SlideMotor.PosMoveSlideAction
+                && slideMotor.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
     }
 }

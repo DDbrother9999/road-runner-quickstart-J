@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -35,6 +36,7 @@ public class SimpleMotorAction extends LinearOpMode {
     public static double xThrottle = 0.4;
     public static double yThrottle = 0.4;
     public static double headThrottle = 0.05;
+    public static String motorName = "backLeft";
 
     private List<Action> runningActions = new ArrayList<>();
 
@@ -42,9 +44,11 @@ public class SimpleMotorAction extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        MotorEx simpleMotor = new MotorEx(hardwareMap, motorName);
+
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-        SlideMotor motorSlide0 = new SlideMotor("backLeft", hardwareMap, telemetry, false);
+        SlideMotor motorSlide0 = new SlideMotor(simpleMotor, telemetry, "simpleMotor");
 
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
         GamepadEx gamepadEx2 = new GamepadEx(gamepad2);
