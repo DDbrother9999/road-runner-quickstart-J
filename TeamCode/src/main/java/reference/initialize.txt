@@ -1,0 +1,3 @@
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
+        SlideMotor vertSlideLeftUp = new SlideMotor("vertSlideLeftUp", hardwareMap, telemetry, false);

@@ -34,20 +34,21 @@ public class SlideMotor {
     public static int retractLimit = 0; //position at full retraction
 
 
-    private final String deviceName;
-    private final MotorEx slideMotor;
-    private final Telemetry telemetry;
+    private String deviceName;
+    private MotorEx slideMotor;
+    private Telemetry telemetry;
     private  MotorEx.Encoder encoder;
 
-    public SlideMotor(String deviceName, HardwareMap hardwareMap, Telemetry telemetry, boolean isInverted) {
-        this.deviceName = deviceName;
-        slideMotor = new MotorEx(hardwareMap, deviceName);
+    public SlideMotor(MotorEx inSlideMotor, Telemetry telemetry, boolean isInverted) {
+        slideMotor = inSlideMotor;
+        deviceName = slideMotor.getDeviceType();
+
+        encoder = slideMotor.encoder;
 
         this.telemetry = telemetry;
         slideMotor.setInverted(isInverted);
         slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        slideMotor.resetEncoder();
-        encoder = slideMotor.encoder;
+        slideMotor.stopAndResetEncoder();
 
         slideMotor.setRunMode(Motor.RunMode.PositionControl);
         slideMotor.setPositionCoefficient(kP);
@@ -116,7 +117,7 @@ public class SlideMotor {
             slideMotor.set(maxPower);
 
             /*
-            Basic cache to prevent repeats
+            Basic cache to prevent repeats (not working, not sure why)
 
             if (lastPowerSet != maxPower) {
                 slideMotor.set(maxPower);
@@ -136,6 +137,6 @@ public class SlideMotor {
 
 
     public Action PosMoveSlide(int targetPosition, double maxPower) {
-        return new edu.nobles.robotics.motor.SlideMotor.PosMoveSlideAction(targetPosition, maxPower);
+        return new PosMoveSlideAction(targetPosition, maxPower);
     }
 }

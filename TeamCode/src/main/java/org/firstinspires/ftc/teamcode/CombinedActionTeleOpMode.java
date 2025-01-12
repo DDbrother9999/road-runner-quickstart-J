@@ -1,4 +1,4 @@
-package edu.nobles.robotics;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,22 +10,22 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.Drawing;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.nobles.robotics.motor.SlideMotor;
 import edu.nobles.robotics.servo.ServoDevice;
 import edu.nobles.robotics.servo.ServoDevice.RotateServoAction;
 
 @TeleOp
 @Config
-public class ServoTeleOpMode extends LinearOpMode {
+public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double xThrottle = 0.4;
     public static double yThrottle = 0.4;
     public static double headThrottle = 0.05;
@@ -39,8 +39,13 @@ public class ServoTeleOpMode extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-
         ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
+
+        SlideMotor vertSlideLeftUp = new SlideMotor("vertSlideLeftUp", hardwareMap, telemetry, false);
+        SlideMotor vertSlideRightUp = new SlideMotor("vertSlideRightUp", hardwareMap, telemetry, false);
+        MotorGroup vertSlideUp = new MotorGroup(new MotorEx(hardwareMap, "vertSlideLeftUp"), new MotorEx(hardwareMap,"vertSlideRightUp"));
+
+        SlideMotor vertSlideLeftDown = new SlideMotor("vertSlideLeftDown", hardwareMap, telemetry, false);
 
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
         GamepadEx gamepadEx2 = new GamepadEx(gamepad2);
@@ -68,6 +73,21 @@ public class ServoTeleOpMode extends LinearOpMode {
                         && flipServo.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
                 runningActions.add(flipServo.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
                 flipFlat = !flipFlat;
+            }
+
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
+                RobotLog.i("Add extend action");
+                // Remove current extend action
+                runningActions.removeIf(a -> a instanceof SlideMotor.PosMoveSlideAction
+                        && vertSlideLeftUp.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
+                runningActions.add(vertSlideLeftUp.PosMoveSlide(2000, 0.25));
+            }
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X)) {
+                RobotLog.i("Add retract action");
+                // Remove current extend action
+                runningActions.removeIf(a -> a instanceof SlideMotor.PosMoveSlideAction
+                        && vertSlideLeftUp.getDeviceName().equals(((SlideMotor.PosMoveSlideAction) a).getDeviceName()));
+                runningActions.add(vertSlideLeftUp.PosMoveSlide(2000, 0.25));
             }
 
             // update running actions
