@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -37,11 +38,11 @@ public class SlideMotor {
     private String deviceName;
     private Motor slideMotor;
     private Telemetry telemetry;
-    private  Motor.Encoder encoder;
+    private Motor.Encoder encoder;
 
     public SlideMotor(Motor inSlideMotor, Telemetry telemetry, String deviceName) {
         slideMotor = inSlideMotor;
-        this.deviceName = slideMotor.getDeviceType();
+        this.deviceName = deviceName;
 
         encoder = slideMotor.encoder;
 
@@ -57,13 +58,6 @@ public class SlideMotor {
 
     public String getDeviceName() {
         return deviceName;
-    }
-
-    /**
-     * Unit is Degree
-     */
-    public double getPosition() {
-        return slideMotor.getCurrentPosition();
     }
 
     //Universal MoveSlide Action (doesn't care about direction)
@@ -87,7 +81,7 @@ public class SlideMotor {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            int current = slideMotor.getCurrentPosition();
+            int current = ((MotorGroup)slideMotor).iterator().next().getCurrentPosition();
 
             telemetry.addData(deviceName + " Last Power Set:", lastPowerSet);
             telemetry.addData(deviceName + " Current Position:", current);
@@ -122,7 +116,7 @@ public class SlideMotor {
              */
 
             RobotLog.i(deviceName + " maxPower: " + maxPower);
-            double corrected = slideMotor.getCorrectedVelocity();
+            double corrected = ((MotorGroup)slideMotor).iterator().next().getCorrectedVelocity();
             RobotLog.i(deviceName + " corrected: " + corrected);
             RobotLog.i(deviceName + " power: " + slideMotor.get());
 

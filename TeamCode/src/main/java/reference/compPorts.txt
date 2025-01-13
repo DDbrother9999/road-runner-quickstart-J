@@ -1,0 +1,28 @@
+Note: canonical direction is determined when facing the vertical slide from the horizontal arm (open side of drivetrain is forward)
+
+Control Hub (update 1/12/25) (note: based off robot config which might not be right):
+
+Motors
+1 = frontLeft =
+2 = backLeft =
+0 = backRight =
+1 = frontRight =
+
+Servos
+
+
+
+-----------
+
+
+
+Expansion Hub (update 1/12/25):
+0 = vertSlideRightUp
+3 = vertSlideRightDown
+1 = vertSlideLeftDown
+2 = vertSlideLeftUp
+
+Servos
+1 =
+3 =
+5 = intake1Slide

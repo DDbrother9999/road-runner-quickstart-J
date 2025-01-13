@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -40,14 +41,15 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
+        // ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
 
         // HANDLE INVERTED MOTORS HERE
-        MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp");
-        MotorEx vertSlideRightUp = new MotorEx(hardwareMap, "vertSlideRightUp");
-        MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, "vertSlideLeftDown");
-        MotorEx vertSlideRightDown = new MotorEx(hardwareMap, "vertSlideRightDown");
+        MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_223);
+        MotorEx vertSlideRightUp = new MotorEx(hardwareMap, "vertSlideRightUp", Motor.GoBILDA.RPM_435);
+        MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, "vertSlideLeftDown", Motor.GoBILDA.RPM_223);
+        MotorEx vertSlideRightDown = new MotorEx(hardwareMap, "vertSlideRightDown", Motor.GoBILDA.RPM_435);
 
 
         //DON'T INVERT MOTORS AFTER HERE
@@ -77,6 +79,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                     -gamepad1.right_stick_x * headThrottle
             ));
 
+            /*
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
                 RobotLog.i("Add Flip action");
                 // Remove current Flip action
@@ -85,6 +88,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 runningActions.add(flipServo.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
                 flipFlat = !flipFlat;
             }
+
+             */
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
                 RobotLog.i("Add extend action");
