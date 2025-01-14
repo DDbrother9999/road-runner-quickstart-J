@@ -3,12 +3,10 @@ Note: canonical direction is determined when facing the vertical slide from the 
 Control Hub (update 1/12/25) (note: based off robot config which might not be right):
 
 Motors
-1 = frontLeft =
+3 = frontLeft =
 2 = backLeft =
 0 = backRight =
 1 = frontRight =
-
-Servos
 
 
 
