@@ -36,7 +36,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     private List<Action> runningActions = new ArrayList<>();
 
     private boolean flipFlat = false;
-
+    private boolean flipFlat2 = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -45,15 +45,14 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         // obtain a list of hubs
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 
-        MotorEx m1 = new MotorEx(hardwareMap, "one");
-        MotorEx m2 = new MotorEx(hardwareMap, "two");
-
         for (LynxModule hub : hubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        // ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
+        ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
+        //ServoDevice servoArmSpinner = new ServoDevice("servoArmSpinner", hardwareMap, telemetry);
+
 
         // HANDLE INVERTED MOTORS HERE
         MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_223);
@@ -63,8 +62,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
 
         //DON'T INVERT MOTORS AFTER HERE
-        MotorGroup vertSlideUpGroup = new MotorGroup(vertSlideLeftUp, vertSlideRightUp);
-        MotorGroup vertSlideDownGroup = new MotorGroup(vertSlideLeftDown, vertSlideRightDown);
+        MotorGroup vertSlideUpGroup = new MotorGroup(vertSlideRightUp, vertSlideLeftUp);
+        MotorGroup vertSlideDownGroup = new MotorGroup(vertSlideRightDown, vertSlideLeftDown);
 
         SlideMotor vertSlideUp = new SlideMotor(vertSlideUpGroup, telemetry, "vertSlideUp");
         SlideMotor vertSlideDown = new SlideMotor(vertSlideDownGroup, telemetry, "vertSlideDown");
@@ -89,14 +88,24 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                     -gamepad1.right_stick_x * headThrottle
             ));
 
-            /*
+
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
-                RobotLog.i("Add Flip action");
+                RobotLog.i("Add Flip Up action");
                 // Remove current Flip action
                 runningActions.removeIf(a -> a instanceof RotateServoAction
                         && flipServo.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
                 runningActions.add(flipServo.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
                 flipFlat = !flipFlat;
+            }
+
+            /*
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B)) {
+                RobotLog.i("Add Flip Up action");
+                // Remove current Flip action
+                runningActions.removeIf(a -> a instanceof RotateServoAction
+                        && servoArmSpinner.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
+                runningActions.add(servoArmSpinner.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
+                flipFlat2 = !flipFlat2;
             }
 
              */
