@@ -61,7 +61,7 @@ public class SlideMotor {
     }
 
     //Universal MoveSlide Action (doesn't care about direction)
-
+    
     public class PosMoveSlideAction implements Action {
         int targetPosition;    //int for desired tick count
         double maxPower;

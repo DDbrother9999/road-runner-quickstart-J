@@ -17,14 +17,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Config
 public class ServoDevice {
-    public static long sleepMillSecond = 10;
+    public static long sleepMillSecond = 0;
 
-    public static double flip0_DegreeStep = 1; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
+    public static double flip0_DegreeStep = 10; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
     public static double flip0_InitDegree = 0;
-    public static double flip0_FlatDegree = 150;
-
-    public static double lowPWM = 2000;
-    public static double hiPWM = 2500;
+    public static double flip0_FlatDegree = 300;
 
     private final String deviceName;
     private final SimpleServo servo;
@@ -34,11 +31,8 @@ public class ServoDevice {
 
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         this.deviceName = deviceName;
-        servo = new SimpleServo(hardwareMap, deviceName, 0, 300, AngleUnit.DEGREES);
-        ServoImplEx servoTemp;
-        servoTemp = (ServoImplEx)hardwareMap.get(Servo.class, deviceName);
+        servo = new SimpleServo(hardwareMap, deviceName, 0, 300, AngleUnit.DEGREES); //All gobilda servos are 0 to 300
 
-        servoTemp.setPwmRange(new PwmControl.PwmRange(lowPWM, hiPWM));
         this.telemetry = telemetry;
     }
 

@@ -9,10 +9,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 @Config
 
 @TeleOp
 public class TestSimpleServo extends LinearOpMode {
+    public static String servoName = "servoArmFlip";
+
 
     public static int slowdown = 2;
     public static int aTurnTo = 150;
@@ -24,7 +27,7 @@ public class TestSimpleServo extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         ServoEx flip0 = new SimpleServo(
-                hardwareMap, "flip0", minAng, maxAng,
+                hardwareMap, servoName, minAng, maxAng,
                 AngleUnit.DEGREES
         );
         FtcDashboard dashboard = FtcDashboard.getInstance();

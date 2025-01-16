@@ -12,41 +12,43 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @Config
 
+
+//Very simple servo test
 public class intake1{
-    private ServoEx flip0;
+    private ServoEx flipServo;
 
     public intake1(HardwareMap hardwareMap) {
-        flip0 = new SimpleServo(
-                hardwareMap, "flip0", 0, 300,
+        flipServo = new SimpleServo(
+                hardwareMap, "flipServo", 0, 300,
                 AngleUnit.DEGREES
         );
     }
 
 
 
-    public class flip200 implements Action {
+    public class flip300 implements Action {
 
         public boolean run(@NonNull TelemetryPacket packet) {
-            flip0.turnToAngle(200);
+            flipServo.turnToAngle(300);
             return false;
         }
 
     }
 
-    public Action flip200() {
-        return new flip200();
+    public Action flip300() {
+        return new flip300();
     }
 
-    public class flip250 implements Action {
+    public class flip0 implements Action {
 
         public boolean run(@NonNull TelemetryPacket packet) {
-            flip0.turnToAngle(300);
+            flipServo.turnToAngle(0);
             return false;
         }
 
     }
 
-    public Action flip250() {
-        return new flip250();
+    public Action flip0() {
+        return new flip0();
     }
 }

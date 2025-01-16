@@ -94,11 +94,11 @@ public final class TestRR extends LinearOpMode {
                     new SequentialAction(
                             new ParallelAction(
                                     followTrajectoryAway(drive, beginPose),
-                                    testIntake1.flip250()
+                                    testIntake1.flip300()
                             ),
                             new ParallelAction(
                                     followTrajectoryReturn(drive, beginPose),
-                                    testIntake1.flip200()
+                                    testIntake1.flip0()
                             )
                     )
             );

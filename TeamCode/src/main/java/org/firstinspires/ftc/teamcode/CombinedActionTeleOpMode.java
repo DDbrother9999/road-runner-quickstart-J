@@ -50,7 +50,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         }
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        ServoDevice flipServo = new ServoDevice("flip0", hardwareMap, telemetry);
+        ServoDevice flipServo = new ServoDevice("servoArmFlip", hardwareMap, telemetry);
         //ServoDevice servoArmSpinner = new ServoDevice("servoArmSpinner", hardwareMap, telemetry);
 
 
@@ -89,8 +89,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             ));
 
 
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
-                RobotLog.i("Add Flip Up action");
+
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B)) {
+                RobotLog.i("Add flip0 action");
                 // Remove current Flip action
                 runningActions.removeIf(a -> a instanceof RotateServoAction
                         && flipServo.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
@@ -98,17 +99,6 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 flipFlat = !flipFlat;
             }
 
-            /*
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B)) {
-                RobotLog.i("Add Flip Up action");
-                // Remove current Flip action
-                runningActions.removeIf(a -> a instanceof RotateServoAction
-                        && servoArmSpinner.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
-                runningActions.add(servoArmSpinner.rotate(flipFlat ? ServoDevice.flip0_InitDegree : ServoDevice.flip0_FlatDegree));
-                flipFlat2 = !flipFlat2;
-            }
-
-             */
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
                 RobotLog.i("Add extend action");

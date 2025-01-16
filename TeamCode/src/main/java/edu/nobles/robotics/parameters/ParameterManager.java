@@ -15,4 +15,8 @@ public class ParameterManager {
     public static int targetVertUpRetract = 0;
     public static int targetVertDownRetract = targetVertUpRetract;
 
+    public static double fullArmExtendTime = 10;
+    public static double fullArmRetractTime = 10;
+
+
 }
