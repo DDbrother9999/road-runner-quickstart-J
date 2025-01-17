@@ -1,3 +1,8 @@
+Windows:
 cd C:\Users\JL\AppData\Local\Android\Sdk\platform-tools
 
+Mac:
+cd /Users/jeffrey/Library/Android/sdk/platform-tools
+
+Command:
 adb connect 192.168.43.1:5555
