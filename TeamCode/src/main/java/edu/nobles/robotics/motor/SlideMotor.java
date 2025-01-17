@@ -40,8 +40,8 @@ public class SlideMotor {
     private Telemetry telemetry;
     private Motor.Encoder encoder;
 
-    public SlideMotor(Motor inSlideMotor, Telemetry telemetry, String deviceName) {
-        slideMotor = inSlideMotor;
+    public SlideMotor(MotorGroup inSlideMotorGroup, Telemetry telemetry, String deviceName) {
+        slideMotor = inSlideMotorGroup;
         this.deviceName = deviceName;
 
         encoder = slideMotor.encoder;

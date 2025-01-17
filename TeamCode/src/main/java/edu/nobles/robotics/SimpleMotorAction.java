@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -45,10 +46,12 @@ public class SimpleMotorAction extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         MotorEx simpleMotor = new MotorEx(hardwareMap, motorName);
+        MotorGroup motorGroupSolo = new MotorGroup(simpleMotor);
+
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-        SlideMotor motorSlide0 = new SlideMotor(simpleMotor, telemetry, "simpleMotor");
+        SlideMotor motorSlide0 = new SlideMotor(motorGroupSolo, telemetry, "simpleMotor");
 
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
         GamepadEx gamepadEx2 = new GamepadEx(gamepad2);
