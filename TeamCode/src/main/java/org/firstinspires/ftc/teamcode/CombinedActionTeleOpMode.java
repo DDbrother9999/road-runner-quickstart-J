@@ -12,7 +12,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -45,7 +44,12 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static int targetVertUpRetract = 0;
     public static int targetVertDownRetract = targetVertUpRetract;
 
-    public static int vertSlideMax = 20;
+    public static int vertSlideUpMax = 2000;
+    public static int vertSlideDownMax = 2000;
+
+    //Position Controller
+    public static double vertSlide_kP = 0.05;
+    public static double vertSlidePositionTolerance = 15;   // allowed maximum error
 
     private List<Action> runningActions = new ArrayList<>();
 
@@ -88,7 +92,6 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                         -gamepad1.right_stick_x * moveRotateThrottle
                 ));
             } else {
-
                 vertSlideControl();
             }
 
@@ -99,14 +102,14 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             }
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
-                RobotLog.i("Add extend action");
+                RobotLog.i("Add slide up");
                 vertSlideUp.setActionMode();
                 vertSlideDown.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(targetVertUpExtend, maxVertUpPower));
                 // addActionEx(vertSlideDown.moveSlide(ParameterManager.targetVertDownExtend, ParameterManager.maxVertUpPower));
             }
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X)) {
-                RobotLog.i("Add retract action");
+                RobotLog.i("Add slide down");
                 vertSlideDown.setActionMode();
                 vertSlideUp.zeroPowerWithFloat();
                 // addActionEx(vertSlideUp.moveSlide(ParameterManager.targetVertUpRetract, ParameterManager.maxVertUpPower));
@@ -136,8 +139,11 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         // HANDLE INVERTED MOTORS HERE
         MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_223);
+        vertSlideLeftUp.setInverted(true);
         MotorEx vertSlideRightUp = new MotorEx(hardwareMap, "vertSlideRightUp", Motor.GoBILDA.RPM_223);
+
         MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, "vertSlideLeftDown", Motor.GoBILDA.RPM_435);
+        vertSlideLeftDown.setInverted(true);
         MotorEx vertSlideRightDown = new MotorEx(hardwareMap, "vertSlideRightDown", Motor.GoBILDA.RPM_435);
 
         //DON'T INVERT MOTORS AFTER HERE
@@ -161,7 +167,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             // slide up
             vertSlideDown.zeroPowerWithFloat();
 
-            if (vertSlideUp.slideMotor.getCurrentPosition() < vertSlideMax) {
+            if (vertSlideUp.slideMotor.getCurrentPosition() < vertSlideUpMax) {
                 vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
                 vertSlideUp.slideMotor.set(upPower);
                 moving = true;
@@ -169,9 +175,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         } else if (upPower < 0) {
             // slide down
             vertSlideUp.zeroPowerWithFloat();
-            if (vertSlideUp.slideMotor.getCurrentPosition() > 0) {
+            if (vertSlideDown.slideMotor.getCurrentPosition() < vertSlideDownMax) {
                 vertSlideDown.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-                vertSlideUp.slideMotor.set(-upPower);
+                vertSlideDown.slideMotor.set(-upPower);
                 moving = true;
             }
         }
@@ -183,7 +189,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     }
 
     private void report(MecanumDrive drive, TelemetryPacket packet) {
-        telemetry.addData("vertSlide position", vertSlideUp.slideMotor.getCurrentPosition());
+        telemetry.addData("vertSlide up position", vertSlideUp.slideMotor.getCurrentPosition());
+        telemetry.addData("vertSlide down position", vertSlideDown.slideMotor.getCurrentPosition());
 
         drive.updatePoseEstimate();
 

@@ -8,7 +8,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MotorGroupEx extends MotorGroup {
+public class MotorGroupEx extends MotorGroup{
     private List<Motor> motorList = new ArrayList<>();
 
     /**
@@ -23,19 +23,20 @@ public class MotorGroupEx extends MotorGroup {
         motorList.addAll(List.of(followers));
     }
 
-    @Override
     public int getCurrentPosition() {
         return motorList.get(0).getCurrentPosition();
     }
 
-    @Override
-    public void setRunMode(RunMode runmode) {
-        motorList.forEach(motor->motor.setRunMode(runmode));
-    }
+//    public void setRunMode(Motor.RunMode runmode) {
+//        motorList.forEach(motor->motor.setRunMode(runmode));
+//    }
 
-    @Override
-    public void set(double speed) {
-        motorList.forEach(motor->motor.set(speed));
-    }
+//    public void set(double speed) {
+//        motorList.get(0).set(speed);
+//        double power = - motorList.get(0).get();
+//        for (int i = 1; i < motorList.size(); i++) {
+//            motorList.get(i).set(power);
+//        }
+//    }
 
 }

@@ -9,6 +9,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
 
 import edu.nobles.robotics.ActionEx;
 
@@ -16,19 +17,13 @@ import edu.nobles.robotics.ActionEx;
 @Config
 public class SlideMotor {
 
-    //Position Controller
-    public static double kP = 0.05;
-
     //Feedforward
     public static double kS = 1; //static friction
     public static double kV = 0; //velocity
     public static double kA = 0; //acceleration
 
-    public static double positionTolerance = 15;   // allowed maximum error
-
     public static int extendLimit = 1000; //position at full extension
     public static int retractLimit = 0; //position at full retraction
-
 
     private String deviceName;
     public MotorGroupEx slideMotor;
@@ -51,8 +46,8 @@ public class SlideMotor {
 
     public void setActionMode() {
         slideMotor.setRunMode(Motor.RunMode.PositionControl);
-        slideMotor.setPositionCoefficient(kP);
-        slideMotor.setPositionTolerance(positionTolerance); // allowed maximum error
+        slideMotor.setPositionCoefficient(CombinedActionTeleOpMode.vertSlide_kP);
+        slideMotor.setPositionTolerance(CombinedActionTeleOpMode.vertSlidePositionTolerance); // allowed maximum error
     }
 
     public void zeroPowerWithFloat() {
@@ -86,7 +81,7 @@ public class SlideMotor {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            int current = ((MotorGroup) slideMotor).iterator().next().getCurrentPosition();
+            int current = slideMotor.getCurrentPosition();
 
             telemetry.addData(deviceName + " Last Power Set:", lastPowerSet);
             telemetry.addData(deviceName + " Current Position:", current);
