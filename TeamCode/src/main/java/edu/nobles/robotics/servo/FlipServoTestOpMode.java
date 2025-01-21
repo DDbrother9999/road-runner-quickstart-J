@@ -9,6 +9,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
+
 @Config
 @Autonomous(name = "FlipServoTest", group = "Autonomous")
 public class FlipServoTestOpMode  extends LinearOpMode {
@@ -23,9 +25,9 @@ public class FlipServoTestOpMode  extends LinearOpMode {
         while (opModeIsActive()) {
             Actions.runBlocking(
                     new SequentialAction(
-                            flipServo.rotate(ServoDevice.flip0_InitDegree),
+                            flipServo.rotate(CombinedActionTeleOpMode.flip0_InitDegree),
                             new SleepAction(5),
-                            flipServo.rotate(ServoDevice.flip0_FlatDegree),
+                            flipServo.rotate(CombinedActionTeleOpMode.flip0_FlatDegree),
                             new SleepAction(5)
                     )
             );

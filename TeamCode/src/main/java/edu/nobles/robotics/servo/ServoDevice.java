@@ -15,19 +15,17 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import edu.nobles.robotics.ActionEx;
+
 @Config
 public class ServoDevice {
     public static long sleepMillSecond = 0;
 
     public static double flip0_DegreeStep = 10; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
-    public static double flip0_InitDegree = 0;
-    public static double flip0_FlatDegree = 300;
 
     private final String deviceName;
     private final SimpleServo servo;
     private final Telemetry telemetry;
-
-
 
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         this.deviceName = deviceName;
@@ -47,7 +45,7 @@ public class ServoDevice {
         return servo.getAngle();
     }
 
-    public class RotateServoAction implements Action {
+    public class RotateServoAction implements ActionEx {
         double toDegree;
         long nextActionTime;
 
@@ -94,7 +92,7 @@ public class ServoDevice {
         }
     }
 
-    public Action rotate(double toDegree) {
+    public ActionEx rotate(double toDegree) {
         return new RotateServoAction(toDegree);
     }
 }

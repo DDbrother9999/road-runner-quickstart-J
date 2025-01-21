@@ -1,4 +1,4 @@
-package edu.nobles.robotics.servo;
+package edu.nobles.robotics.sensors;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

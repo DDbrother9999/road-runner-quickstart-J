@@ -4,18 +4,13 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.arcrobotics.ftclib.controller.wpilibcontroller.ElevatorFeedforward;
-import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import edu.nobles.robotics.ActionEx;
 
 
 @Config
@@ -36,24 +31,33 @@ public class SlideMotor {
 
 
     private String deviceName;
-    private Motor slideMotor;
+    public MotorGroupEx slideMotor;
     private Telemetry telemetry;
-    private Motor.Encoder encoder;
 
-    public SlideMotor(MotorGroup inSlideMotorGroup, Telemetry telemetry, String deviceName) {
+    public SlideMotor(MotorGroupEx inSlideMotorGroup, Telemetry telemetry, String deviceName) {
         slideMotor = inSlideMotorGroup;
         this.deviceName = deviceName;
-
-        encoder = slideMotor.encoder;
 
         this.telemetry = telemetry;
         slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         slideMotor.stopAndResetEncoder();
 
+        slideMotor.set(0);
+    }
+
+    public void setManulMode() {
+        slideMotor.setRunMode(Motor.RunMode.RawPower);
+    }
+
+    public void setActionMode() {
         slideMotor.setRunMode(Motor.RunMode.PositionControl);
         slideMotor.setPositionCoefficient(kP);
-        slideMotor.set(0);
         slideMotor.setPositionTolerance(positionTolerance); // allowed maximum error
+    }
+
+    public void zeroPowerWithFloat() {
+        slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        slideMotor.set(0);
     }
 
     public String getDeviceName() {
@@ -61,12 +65,13 @@ public class SlideMotor {
     }
 
     //Universal MoveSlide Action (doesn't care about direction)
-    
-    public class PosMoveSlideAction implements Action {
+
+    public class PosMoveSlideAction implements ActionEx {
         int targetPosition;    //int for desired tick count
         double maxPower;
 
         double lastPowerSet = 0;
+
         public PosMoveSlideAction(int targetPosition, double maxPower) {
             this.targetPosition = targetPosition;
             this.maxPower = maxPower;
@@ -81,7 +86,7 @@ public class SlideMotor {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            int current = ((MotorGroup)slideMotor).iterator().next().getCurrentPosition();
+            int current = ((MotorGroup) slideMotor).iterator().next().getCurrentPosition();
 
             telemetry.addData(deviceName + " Last Power Set:", lastPowerSet);
             telemetry.addData(deviceName + " Current Position:", current);
@@ -116,7 +121,7 @@ public class SlideMotor {
              */
 
             RobotLog.i(deviceName + " maxPower: " + maxPower);
-            double corrected = ((MotorGroup)slideMotor).iterator().next().getCorrectedVelocity();
+            double corrected = ((MotorGroup) slideMotor).iterator().next().getCorrectedVelocity();
             RobotLog.i(deviceName + " corrected: " + corrected);
             RobotLog.i(deviceName + " power: " + slideMotor.get());
 
@@ -125,7 +130,7 @@ public class SlideMotor {
     }
 
 
-    public Action PosMoveSlide(int targetPosition, double maxPower) {
+    public ActionEx moveSlide(int targetPosition, double maxPower) {
         return new PosMoveSlideAction(targetPosition, maxPower);
     }
 }
