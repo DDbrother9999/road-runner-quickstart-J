@@ -9,11 +9,11 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
+import static org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode.*;
 
 @Config
 @Autonomous(name = "FlipServoTest", group = "Autonomous")
-public class FlipServoTestOpMode  extends LinearOpMode {
+public class FlipServoTestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -25,14 +25,14 @@ public class FlipServoTestOpMode  extends LinearOpMode {
         while (opModeIsActive()) {
             Actions.runBlocking(
                     new SequentialAction(
-                            flipServo.rotate(CombinedActionTeleOpMode.flip0_InitDegree),
+                            flipServo.rotate(flip0_initDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
                             new SleepAction(5),
-                            flipServo.rotate(CombinedActionTeleOpMode.flip0_FlatDegree),
+                            flipServo.rotate(flip0_flatDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
                             new SleepAction(5)
                     )
             );
         }
 
-        Actions.runBlocking(flipServo.rotate(50));
+        Actions.runBlocking(flipServo.rotate(50, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
     }
 }

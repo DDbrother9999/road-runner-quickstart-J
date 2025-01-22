@@ -1,5 +1,7 @@
 package edu.nobles.robotics.servo;
 
+import static org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode.*;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -14,7 +16,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
 import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
@@ -66,7 +67,8 @@ public class ServoActionTeleOpMode extends LinearOpMode {
                 // Remove current Flip action
                 runningActions.removeIf(a -> a instanceof RotateServoAction
                         && flipServo.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
-                runningActions.add(flipServo.rotate(flipFlat ? CombinedActionTeleOpMode.flip0_InitDegree : CombinedActionTeleOpMode.flip0_FlatDegree));
+                runningActions.add(flipServo.rotate(flipFlat ? flip0_initDegree : flip0_flatDegree,
+                        flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
                 flipFlat = !flipFlat;
             }
 

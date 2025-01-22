@@ -4,12 +4,8 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -19,10 +15,6 @@ import edu.nobles.robotics.ActionEx;
 
 @Config
 public class ServoDevice {
-    public static long sleepMillSecond = 0;
-
-    public static double flip0_DegreeStep = 10; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
-
     private final String deviceName;
     private SimpleServo servo;
     private final Telemetry telemetry;
@@ -36,11 +28,9 @@ public class ServoDevice {
             servo = new SimpleServo(hardwareMap, deviceName, 0, 300, AngleUnit.DEGREES); //All gobilda servos are 0 to 300
         } catch (Exception e) {
             available = false;
-            RobotLog.e("Servo "+deviceName+" is not available");
+            RobotLog.e("Servo " + deviceName + " is not available");
             return;
         }
-
-
     }
 
     public String getDeviceName() {
@@ -57,9 +47,14 @@ public class ServoDevice {
     public class RotateServoAction implements ActionEx {
         double toDegree;
         long nextActionTime;
+        long oneStepTimeInMillSecond;
+        double oneStepRotationInDegree;
 
-        public RotateServoAction(double toDegree) {
+        public RotateServoAction(double toDegree, long oneStepTimeInMillSecond, double oneStepRotationInDegree) {
             this.toDegree = toDegree;
+            this.oneStepTimeInMillSecond = oneStepTimeInMillSecond;
+            this.oneStepRotationInDegree = oneStepRotationInDegree;
+
             nextActionTime = System.currentTimeMillis();
         }
 
@@ -73,7 +68,7 @@ public class ServoDevice {
             if (nextActionTime > currentTime) {
                 return true;
             }
-            nextActionTime = currentTime + sleepMillSecond;
+            nextActionTime = currentTime + oneStepTimeInMillSecond;
 
             double current = servo.getAngle();
 
@@ -90,18 +85,24 @@ public class ServoDevice {
             }
             telemetry.update();
 
-            if (Math.abs(current - toDegree) <= flip0_DegreeStep) {
+            if (Math.abs(current - toDegree) <= oneStepRotationInDegree) {
                 servo.turnToAngle(toDegree);
             } else {
                 int sign = toDegree > current ? 1 : -1;
-                servo.rotateByAngle(flip0_DegreeStep * sign);
+                servo.rotateByAngle(oneStepRotationInDegree * sign);
             }
 
             return true;
         }
     }
 
-    public ActionEx rotate(double toDegree) {
-        return new RotateServoAction(toDegree);
+    /**
+     *
+     * @param toDegree
+     * @param oneStepTimeInMillSecond if you don't rotate in steps, set this to 0
+     * @param oneStepRotationInDegree if you don't rotate in steps, set it to large number, such as 400
+     */
+    public ActionEx rotate(double toDegree, long oneStepTimeInMillSecond, double oneStepRotationInDegree) {
+        return new RotateServoAction(toDegree, oneStepTimeInMillSecond, oneStepRotationInDegree);
     }
 }

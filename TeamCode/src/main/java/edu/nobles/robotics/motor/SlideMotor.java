@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -49,7 +48,7 @@ public class SlideMotor {
             RobotLog.i(deviceName + " setActionMode ");
             slideMotor.setRunMode(Motor.RunMode.PositionControl);
             slideMotor.setPositionCoefficient(CombinedActionTeleOpMode.vertSlide_kP);
-            slideMotor.setPositionTolerance(CombinedActionTeleOpMode.vertSlidePositionTolerance); // allowed maximum error
+            slideMotor.setPositionTolerance(CombinedActionTeleOpMode.vertSlide_positionTolerance); // allowed maximum error
         }
     }
 
@@ -109,7 +108,7 @@ public class SlideMotor {
             double actualPower = slideMotor.get();
             telemetry.addData(deviceName + " Power:", actualPower);
             RobotLog.i(deviceName + " Power: " + actualPower);
-            
+
             telemetry.update();
 
             /*
