@@ -94,7 +94,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        initHareware();
+        initHardware();
         telemetry.update();
 
         waitForStart();
@@ -120,7 +120,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B) && flipServo.available) {
                 RobotLog.i("Add flip0 action");
                 double toDegree = flipFlat ? flip0_initDegree : flip0_flatDegree;
-                addActionEx(flipServo.rotate(toDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
+                addActionEx(flipServo.rotateCustom(toDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
                 flipFlat = !flipFlat;
             }
 
@@ -172,7 +172,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         }
     }
 
-    private void initHareware() {
+    private void initHardware() {
         List<ServoDevice> servoList = new ArrayList<>();
 
         mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
@@ -266,6 +266,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             vertSlideUp.slideMotor.set(0);
             vertSlideDown.slideMotor.set(0);
         }
+        telemetry.addData("vertSlideUp position: ", vertSlideUp.slideMotor.getCurrentPosition());
+        telemetry.addData("vertSlideDown position: ", vertSlideDown.slideMotor.getCurrentPosition());
     }
 
     private void report(MecanumDrive drive, TelemetryPacket packet) {
