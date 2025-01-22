@@ -8,6 +8,11 @@ Motors
 0 = backRight =
 1 = frontRight =
 
+Servos:
+1 = servo1 = leftSMB
+3 = servo3 = rightSMB
+5 = servo5 = 
+
 
 
 -----------
@@ -21,6 +26,6 @@ Expansion Hub (update 1/12/25):
 2 = vertSlideLeftUp
 
 Servos
-1 =
-3 =
-5 = intake1Slide
+1 = servo1 = intake1spin
+3 = servo3 = intake1SlideRetract
+5 = servo5 = intake1SlideExtend
