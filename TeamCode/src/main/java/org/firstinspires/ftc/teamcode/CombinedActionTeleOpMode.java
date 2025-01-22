@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -19,6 +20,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.nobles.robotics.ActionEx;
 import edu.nobles.robotics.motor.MotorGroupEx;
@@ -47,6 +49,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double claw2_openDegree = 30;
     public static double claw2_closeDegree = 0;
 
+    public static double contRotateServo_power = 0.25;
+
+
     public static int vertUp_max = 2000;
     public static double vertUp_maxPower = 0.25;
     public static int vertUp_targetUp = 1000;
@@ -66,11 +71,13 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     private boolean flipFlat = false;
     private boolean clawOpen = true;
+    private boolean contRotateStoped = true;
 
     private MecanumDrive mecanumDrive;
     private ServoDevice flipServo;
     private ServoDevice clawServo1;
     private ServoDevice clawServo2;
+    private CRServo contRotateServo;
     private ServoDevice servoArmSpinner;
     private SlideMotor vertSlideUp;
     private SlideMotor vertSlideDown;
@@ -110,27 +117,27 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 vertSlideControl();
             }
 
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B)) {
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B) && flipServo.available) {
                 RobotLog.i("Add flip0 action");
                 double toDegree = flipFlat ? flip0_initDegree : flip0_flatDegree;
                 addActionEx(flipServo.rotate(toDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
                 flipFlat = !flipFlat;
             }
 
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y) && vertSlideUp != null && vertSlideDown != null) {
                 RobotLog.i("Add slide up");
                 // vertSlideDown.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(vertUp_targetUp, vertUp_maxPower));
                 addActionEx(vertSlideDown.moveSlide(vertDown_targetUp, vertDown_maxPower));
             }
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X)) {
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X) && vertSlideUp != null && vertSlideDown != null) {
                 RobotLog.i("Add slide down");
                 // vertSlideUp.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(vertUp_targetDown, vertUp_maxPower));
                 addActionEx(vertSlideDown.moveSlide(vertDown_targetDown, vertDown_maxPower));
             }
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) && clawServo1.available && clawServo2.available) {
-                if(clawOpen) {
+                if (clawOpen) {
                     clawServo1.servo.turnToAngle(claw1_closeDegree);
                     clawServo2.servo.turnToAngle(claw2_closeDegree);
                 } else {
@@ -138,6 +145,15 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                     clawServo2.servo.turnToAngle(claw2_openDegree);
                 }
                 clawOpen = !clawOpen;
+            }
+
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) && contRotateServo != null) {
+                if (contRotateStoped) {
+                    contRotateServo.set(contRotateServo_power);
+                } else {
+                    contRotateServo.set(0);
+                }
+                contRotateStoped = !contRotateStoped;
             }
 
             // update running actions
@@ -157,11 +173,21 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     }
 
     private void initHareware() {
+        List<ServoDevice> servoList = new ArrayList<>();
+
         mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         flipServo = new ServoDevice("servoArmFlip", hardwareMap, telemetry);
+        servoList.add(flipServo);
         //servoArmSpinner = new ServoDevice("servoArmSpinner", hardwareMap, telemetry);
-        clawServo1= new ServoDevice("claw1", hardwareMap, telemetry);;
-        clawServo2= new ServoDevice("claw2", hardwareMap, telemetry);;
+        clawServo1 = new ServoDevice("claw1", hardwareMap, telemetry);
+        servoList.add(clawServo1);
+        clawServo2 = new ServoDevice("claw2", hardwareMap, telemetry);
+        servoList.add(clawServo2);
+        try {
+            contRotateServo = new CRServo(hardwareMap, "contRotate");
+        } catch (Exception e) {
+            RobotLog.e("Continuous Rotate Servo is not available");
+        }
 
         try {
             MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_435);
@@ -199,21 +225,18 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         if (!mecanumDrive.available) {
             unavailableHardwares.add("MecanumDrive");
         }
-        if (!flipServo.available) {
-            unavailableHardwares.add("FlipServo");
-        }
-        if (!clawServo1.available) {
-            unavailableHardwares.add("clawServo1");
-        }
-        if (!clawServo2.available) {
-            unavailableHardwares.add("clawServo2");
-        }
         if (vertSlideUp == null) {
             unavailableHardwares.add("vertSlideUp");
         }
         if (vertSlideDown == null) {
             unavailableHardwares.add("vertSlideDown");
         }
+        if (contRotateServo == null) {
+            unavailableHardwares.add("contRotateServo");
+        }
+        unavailableHardwares.addAll(
+                servoList.stream().filter(servo -> !servo.available).map(ServoDevice::getDeviceName).collect(Collectors.toList()));
+
         telemetry.addData("Unavailable devices", String.join(", ", unavailableHardwares));
     }
 
