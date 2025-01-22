@@ -44,13 +44,13 @@ public class ServoDevice {
         return servo.getAngle();
     }
 
-    public class RotateServoAction implements ActionEx {
+    public class CustomRotateServoAction implements ActionEx {
         double toDegree;
         long nextActionTime;
         long oneStepTimeInMillSecond;
         double oneStepRotationInDegree;
 
-        public RotateServoAction(double toDegree, long oneStepTimeInMillSecond, double oneStepRotationInDegree) {
+        public CustomRotateServoAction(double toDegree, long oneStepTimeInMillSecond, double oneStepRotationInDegree) {
             this.toDegree = toDegree;
             this.oneStepTimeInMillSecond = oneStepTimeInMillSecond;
             this.oneStepRotationInDegree = oneStepRotationInDegree;
@@ -96,13 +96,43 @@ public class ServoDevice {
         }
     }
 
+    public class NormalRotateServoAction implements ActionEx {
+        double toDegree;
+
+        public NormalRotateServoAction(double toDegree) {
+            this.toDegree = toDegree;
+        }
+
+        public String getDeviceName() {
+            return deviceName;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            servo.turnToAngle(toDegree);
+            telemetry.addData(deviceName + " To Position:", toDegree);
+
+            RobotLog.i(deviceName + " To Position: %.1f", toDegree);
+            telemetry.update();
+            return true;
+        }
+    }
+
+
+
     /**
      *
      * @param toDegree
      * @param oneStepTimeInMillSecond if you don't rotate in steps, set this to 0
      * @param oneStepRotationInDegree if you don't rotate in steps, set it to large number, such as 400
      */
-    public ActionEx rotate(double toDegree, long oneStepTimeInMillSecond, double oneStepRotationInDegree) {
-        return new RotateServoAction(toDegree, oneStepTimeInMillSecond, oneStepRotationInDegree);
+    public ActionEx rotateCustom(double toDegree, long oneStepTimeInMillSecond, double oneStepRotationInDegree) {
+        return new CustomRotateServoAction(toDegree, oneStepTimeInMillSecond, oneStepRotationInDegree);
+    }
+
+    //
+
+    public ActionEx rotateNormal(double toDegree) {
+        return new NormalRotateServoAction(toDegree);
     }
 }

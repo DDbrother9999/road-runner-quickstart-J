@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.nobles.robotics.servo.ServoDevice.RotateServoAction;
+import edu.nobles.robotics.servo.ServoDevice.CustomRotateServoAction;
 
 @TeleOp
 @Config
@@ -65,9 +65,9 @@ public class ServoActionTeleOpMode extends LinearOpMode {
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
                 RobotLog.i("Add Flip action");
                 // Remove current Flip action
-                runningActions.removeIf(a -> a instanceof RotateServoAction
-                        && flipServo.getDeviceName().equals(((RotateServoAction) a).getDeviceName()));
-                runningActions.add(flipServo.rotate(flipFlat ? flip0_initDegree : flip0_flatDegree,
+                runningActions.removeIf(a -> a instanceof CustomRotateServoAction
+                        && flipServo.getDeviceName().equals(((CustomRotateServoAction) a).getDeviceName()));
+                runningActions.add(flipServo.rotateCustom(flipFlat ? flip0_initDegree : flip0_flatDegree,
                         flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
                 flipFlat = !flipFlat;
             }

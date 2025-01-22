@@ -25,14 +25,14 @@ public class FlipServoTestOpMode extends LinearOpMode {
         while (opModeIsActive()) {
             Actions.runBlocking(
                     new SequentialAction(
-                            flipServo.rotate(flip0_initDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
+                            flipServo.rotateCustom(flip0_initDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
                             new SleepAction(5),
-                            flipServo.rotate(flip0_flatDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
+                            flipServo.rotateCustom(flip0_flatDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
                             new SleepAction(5)
                     )
             );
         }
 
-        Actions.runBlocking(flipServo.rotate(50, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
+        Actions.runBlocking(flipServo.rotateCustom(50, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
     }
 }
