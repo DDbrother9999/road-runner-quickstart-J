@@ -41,13 +41,19 @@ public class SlideMotor {
     }
 
     public void setManualMode() {
-        slideMotor.setRunMode(Motor.RunMode.RawPower);
+        if (slideMotor.runmode != Motor.RunMode.RawPower) {
+            RobotLog.i(deviceName + " setManualMode ");
+            slideMotor.setRunMode(Motor.RunMode.RawPower);
+        }
     }
 
     public void setActionMode() {
-        slideMotor.setRunMode(Motor.RunMode.PositionControl);
-        slideMotor.setPositionCoefficient(CombinedActionTeleOpMode.vertSlide_kP);
-        slideMotor.setPositionTolerance(CombinedActionTeleOpMode.vertSlidePositionTolerance); // allowed maximum error
+        if (slideMotor.runmode != Motor.RunMode.PositionControl) {
+            RobotLog.i(deviceName + " setActionMode ");
+            slideMotor.setRunMode(Motor.RunMode.PositionControl);
+            slideMotor.setPositionCoefficient(CombinedActionTeleOpMode.vertSlide_kP);
+            slideMotor.setPositionTolerance(CombinedActionTeleOpMode.vertSlidePositionTolerance); // allowed maximum error
+        }
     }
 
     public void zeroPowerWithFloat() {
@@ -64,14 +70,12 @@ public class SlideMotor {
     public class PosMoveSlideAction implements ActionEx {
         int targetPosition;    //int for desired tick count
         double maxPower;
-
         double lastPowerSet = 0;
+        boolean inited = false;
 
         public PosMoveSlideAction(int targetPosition, double maxPower) {
             this.targetPosition = targetPosition;
             this.maxPower = maxPower;
-
-            slideMotor.setTargetPosition(targetPosition);
         }
 
         public String getDeviceName() {
@@ -80,16 +84,20 @@ public class SlideMotor {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-
             int current = slideMotor.getCurrentPosition();
+            if (!inited) {
+                RobotLog.i(deviceName + " Initial Position: " + current);
+                RobotLog.i(deviceName + " To Position: " + targetPosition);
+                setActionMode();
+                slideMotor.setTargetPosition(targetPosition);
+                inited = true;
+            }
 
-            telemetry.addData(deviceName + " Last Power Set:", lastPowerSet);
+
             telemetry.addData(deviceName + " Current Position:", current);
             telemetry.addData(deviceName + " To Position:", targetPosition);
 
-            RobotLog.i(deviceName + " Last Power Set " + lastPowerSet);
             RobotLog.i(deviceName + " Current Position: " + current);
-            RobotLog.i(deviceName + " To Position: " + targetPosition);
 
             if (slideMotor.atTargetPosition()) {
                 slideMotor.stopMotor();
@@ -115,10 +123,10 @@ public class SlideMotor {
 
              */
 
-            RobotLog.i(deviceName + " maxPower: " + maxPower);
-            double corrected = ((MotorGroup) slideMotor).iterator().next().getCorrectedVelocity();
-            RobotLog.i(deviceName + " corrected: " + corrected);
-            RobotLog.i(deviceName + " power: " + slideMotor.get());
+//            RobotLog.i(deviceName + " maxPower: " + maxPower);
+//            double corrected = ((MotorGroup) slideMotor).iterator().next().getCorrectedVelocity();
+//            RobotLog.i(deviceName + " corrected: " + corrected);
+//            RobotLog.i(deviceName + " power: " + slideMotor.get());
 
             return true;
         }

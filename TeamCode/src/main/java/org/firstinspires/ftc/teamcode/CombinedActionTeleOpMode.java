@@ -39,10 +39,10 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     public static double maxVertUpPower = 0.25;
     public static double maxVertDownPower = maxVertUpPower;
-    public static int targetVertUpExtend = 2000;
-    public static int targetVertDownExtend = targetVertUpExtend;
+    public static int targetVertUpExtend = 1000;
+    public static int targetVertDownExtend = -1000;
     public static int targetVertUpRetract = 0;
-    public static int targetVertDownRetract = targetVertUpRetract;
+    public static int targetVertDownRetract = 0;
 
     public static int vertSlideUpMax = 2000;
     public static int vertSlideDownMax = 2000;
@@ -83,7 +83,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             gamepadEx2.readButtons();
 
             // updated based on gamepads
-            if (useGamepadForMoving) {
+            if (useGamepadForMoving && mecanumDrive.available) {
                 mecanumDrive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
                                 -gamepad1.left_stick_y * moveXThrottle,
@@ -103,16 +103,14 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
                 RobotLog.i("Add slide up");
-                vertSlideUp.setActionMode();
-                vertSlideDown.zeroPowerWithFloat();
+                // vertSlideDown.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(targetVertUpExtend, maxVertUpPower));
-                // addActionEx(vertSlideDown.moveSlide(ParameterManager.targetVertDownExtend, ParameterManager.maxVertUpPower));
+                addActionEx(vertSlideDown.moveSlide(targetVertDownExtend, maxVertDownPower));
             }
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X)) {
                 RobotLog.i("Add slide down");
-                vertSlideDown.setActionMode();
-                vertSlideUp.zeroPowerWithFloat();
-                // addActionEx(vertSlideUp.moveSlide(ParameterManager.targetVertUpRetract, ParameterManager.maxVertUpPower));
+                // vertSlideUp.zeroPowerWithFloat();
+                addActionEx(vertSlideUp.moveSlide(targetVertUpRetract, maxVertUpPower));
                 addActionEx(vertSlideDown.moveSlide(targetVertDownRetract, maxVertDownPower));
             }
 
@@ -192,19 +190,23 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         telemetry.addData("vertSlide up position", vertSlideUp.slideMotor.getCurrentPosition());
         telemetry.addData("vertSlide down position", vertSlideDown.slideMotor.getCurrentPosition());
 
-        drive.updatePoseEstimate();
 
         telemetry.addData("left_stick_y", gamepad1.left_stick_y);
         telemetry.addData("left_stick_x", gamepad1.left_stick_x);
         telemetry.addData("right_stick_x", gamepad1.right_stick_x);
 
-        telemetry.addData("x", drive.pose.position.x);
-        telemetry.addData("y", drive.pose.position.y);
-        telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+        if(drive.available) {
+            drive.updatePoseEstimate();
+            telemetry.addData("x", drive.pose.position.x);
+            telemetry.addData("y", drive.pose.position.y);
+            telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+        }
         telemetry.update();
 
         packet.fieldOverlay().setStroke("#3F51B5");
-        Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
+        if(drive.available) {
+            Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
+        }
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 

@@ -24,14 +24,23 @@ public class ServoDevice {
     public static double flip0_DegreeStep = 10; // servo rotates 'degreeStep' degree for every 'sleepMillSecond'
 
     private final String deviceName;
-    private final SimpleServo servo;
+    private SimpleServo servo;
     private final Telemetry telemetry;
+
+    public boolean available = true;
 
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         this.deviceName = deviceName;
-        servo = new SimpleServo(hardwareMap, deviceName, 0, 300, AngleUnit.DEGREES); //All gobilda servos are 0 to 300
-
         this.telemetry = telemetry;
+        try {
+            servo = new SimpleServo(hardwareMap, deviceName, 0, 300, AngleUnit.DEGREES); //All gobilda servos are 0 to 300
+        } catch (Exception e) {
+            available = false;
+            RobotLog.e("Servo "+deviceName+" is not available");
+            return;
+        }
+
+
     }
 
     public String getDeviceName() {
