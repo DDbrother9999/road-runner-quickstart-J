@@ -47,7 +47,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static int vertSlideUpMax = 2000;
     public static int vertSlideDownMax = 2000;
 
-    //Position Controller
+    //Vertical Slider's Position Controller
     public static double vertSlide_kP = 0.05;
     public static double vertSlidePositionTolerance = 15;   // allowed maximum error
 
@@ -136,13 +136,13 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         //servoArmSpinner = new ServoDevice("servoArmSpinner", hardwareMap, telemetry);
 
         // HANDLE INVERTED MOTORS HERE
-        MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_223);
+        MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_435);
         vertSlideLeftUp.setInverted(true);
-        MotorEx vertSlideRightUp = new MotorEx(hardwareMap, "vertSlideRightUp", Motor.GoBILDA.RPM_223);
+        MotorEx vertSlideRightUp = new MotorEx(hardwareMap, "vertSlideRightUp", Motor.GoBILDA.RPM_435);
 
-        MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, "vertSlideLeftDown", Motor.GoBILDA.RPM_435);
+        MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, "vertSlideLeftDown", Motor.GoBILDA.RPM_312);
         vertSlideLeftDown.setInverted(true);
-        MotorEx vertSlideRightDown = new MotorEx(hardwareMap, "vertSlideRightDown", Motor.GoBILDA.RPM_435);
+        MotorEx vertSlideRightDown = new MotorEx(hardwareMap, "vertSlideRightDown", Motor.GoBILDA.RPM_312);
 
         //DON'T INVERT MOTORS AFTER HERE
         MotorGroupEx vertSlideUpGroup = new MotorGroupEx(vertSlideRightUp, vertSlideLeftUp);

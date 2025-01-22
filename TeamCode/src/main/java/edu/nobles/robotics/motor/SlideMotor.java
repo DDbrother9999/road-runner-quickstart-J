@@ -22,12 +22,9 @@ public class SlideMotor {
     public static double kV = 0; //velocity
     public static double kA = 0; //acceleration
 
-    public static int extendLimit = 1000; //position at full extension
-    public static int retractLimit = 0; //position at full retraction
-
-    private String deviceName;
+    private final String deviceName;
+    private final Telemetry telemetry;
     public MotorGroupEx slideMotor;
-    private Telemetry telemetry;
 
     public SlideMotor(MotorGroupEx inSlideMotorGroup, Telemetry telemetry, String deviceName) {
         slideMotor = inSlideMotorGroup;
@@ -88,14 +85,13 @@ public class SlideMotor {
             if (!inited) {
                 RobotLog.i(deviceName + " Initial Position: " + current);
                 RobotLog.i(deviceName + " To Position: " + targetPosition);
+                telemetry.addData(deviceName + " To Position:", targetPosition);
                 setActionMode();
                 slideMotor.setTargetPosition(targetPosition);
                 inited = true;
             }
 
-
             telemetry.addData(deviceName + " Current Position:", current);
-            telemetry.addData(deviceName + " To Position:", targetPosition);
 
             RobotLog.i(deviceName + " Current Position: " + current);
 
@@ -108,10 +104,13 @@ public class SlideMotor {
                 lastPowerSet = 0;
                 return false;
             }
-            telemetry.update();
-
 
             slideMotor.set(maxPower);
+            double actualPower = slideMotor.get();
+            telemetry.addData(deviceName + " Power:", actualPower);
+            RobotLog.i(deviceName + " Power: " + actualPower);
+            
+            telemetry.update();
 
             /*
             Basic cache to prevent repeats (not working, not sure why)

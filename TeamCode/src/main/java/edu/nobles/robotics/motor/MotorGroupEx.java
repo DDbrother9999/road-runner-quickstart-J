@@ -10,7 +10,7 @@ import java.util.List;
 
 public class MotorGroupEx extends MotorGroup{
     private final List<MotorEx> motorList = new ArrayList<>();
-    
+
     public RunMode runmode;
 
     /**
