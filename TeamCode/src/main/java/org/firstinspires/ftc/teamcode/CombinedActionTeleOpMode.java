@@ -151,9 +151,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         MotorGroupEx vertSlideDownGroup = new MotorGroupEx(vertSlideRightDown, vertSlideLeftDown);
 
         vertSlideUp = new SlideMotor(vertSlideUpGroup, telemetry, "vertSlideUp");
-        vertSlideUp.setManulMode();
+        vertSlideUp.setManualMode();
         vertSlideDown = new SlideMotor(vertSlideDownGroup, telemetry, "vertSlideDown");
-        vertSlideDown.setManulMode();
+        vertSlideDown.setManualMode();
 
         //GAMEPADS
         gamepadEx1 = new GamepadEx(gamepad1);

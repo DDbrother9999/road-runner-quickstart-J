@@ -40,7 +40,7 @@ public class SlideMotor {
         slideMotor.set(0);
     }
 
-    public void setManulMode() {
+    public void setManualMode() {
         slideMotor.setRunMode(Motor.RunMode.RawPower);
     }
 

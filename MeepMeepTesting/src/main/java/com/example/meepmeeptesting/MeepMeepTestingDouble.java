@@ -1,13 +1,13 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
-import com.acmerobotics.roadrunner.Vector2d;
 
 
-public class MeepMeepTesting {
+public class MeepMeepTestingDouble {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
@@ -21,6 +21,8 @@ public class MeepMeepTesting {
                 //Check for vertical slide extension
                 .strafeTo(new Vector2d(0, -34))
                 //Retract vertical slide, snapping piece onto
+                .strafeToSplineHeading(new Vector2d(47, -60), Math.toRadians(-90))
+                .strafeToSplineHeading(new Vector2d(0, -34), Math.toRadians(90))
                 .strafeTo(new Vector2d(36, -34))
                 .strafeTo(new Vector2d(36, 0))
                 .strafeTo(new Vector2d(47, 0))

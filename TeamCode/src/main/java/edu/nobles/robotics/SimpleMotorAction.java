@@ -51,7 +51,7 @@ public class SimpleMotorAction extends LinearOpMode {
         MotorEx simpleMotor = new MotorEx(hardwareMap, motorName);
         motorGroupSolo = new MotorGroupEx(simpleMotor);
         SlideMotor motorSlide0 = new SlideMotor(motorGroupSolo, telemetry, "simpleMotor");
-        motorSlide0.setManulMode();
+        motorSlide0.setManualMode();
         motorGroupSolo.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
