@@ -42,15 +42,20 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     // if you don't rotate in steps, set it to large number, such as 400
     public static double flip0_oneStepRotationInDegree = 400;
 
+    public static double claw1_openDegree = 0;
+    public static double claw1_closeDegree = 30;
+    public static double claw2_openDegree = 30;
+    public static double claw2_closeDegree = 0;
+
     public static int vertUp_max = 2000;
     public static double vertUp_maxPower = 0.25;
-    public static int vertUp_targetExtend = 1000;
-    public static int vertUp_targetRetract = 0;
+    public static int vertUp_targetUp = 1000;
+    public static int vertUp_targetDown = 0;
 
     public static int vertDown_max = 2000;
     public static double vertDown_maxPower = vertUp_maxPower;
-    public static int vertDown_targetExtend = -1000;
-    public static int vertDown_targetRetract = 0;
+    public static int vertDown_targetUp = -1000;
+    public static int vertDown_targetDown = 0;
 
 
     //Vertical Slider's Position Controller
@@ -60,9 +65,12 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     private List<Action> runningActions = new ArrayList<>();
 
     private boolean flipFlat = false;
+    private boolean clawOpen = true;
 
     private MecanumDrive mecanumDrive;
     private ServoDevice flipServo;
+    private ServoDevice clawServo1;
+    private ServoDevice clawServo2;
     private ServoDevice servoArmSpinner;
     private SlideMotor vertSlideUp;
     private SlideMotor vertSlideDown;
@@ -112,14 +120,24 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y)) {
                 RobotLog.i("Add slide up");
                 // vertSlideDown.zeroPowerWithFloat();
-                addActionEx(vertSlideUp.moveSlide(vertUp_targetExtend, vertUp_maxPower));
-                addActionEx(vertSlideDown.moveSlide(vertDown_targetExtend, vertDown_maxPower));
+                addActionEx(vertSlideUp.moveSlide(vertUp_targetUp, vertUp_maxPower));
+                addActionEx(vertSlideDown.moveSlide(vertDown_targetUp, vertDown_maxPower));
             }
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X)) {
                 RobotLog.i("Add slide down");
                 // vertSlideUp.zeroPowerWithFloat();
-                addActionEx(vertSlideUp.moveSlide(vertUp_targetRetract, vertUp_maxPower));
-                addActionEx(vertSlideDown.moveSlide(vertDown_targetRetract, vertDown_maxPower));
+                addActionEx(vertSlideUp.moveSlide(vertUp_targetDown, vertUp_maxPower));
+                addActionEx(vertSlideDown.moveSlide(vertDown_targetDown, vertDown_maxPower));
+            }
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) && clawServo1.available && clawServo2.available) {
+                if(clawOpen) {
+                    clawServo1.servo.turnToAngle(claw1_closeDegree);
+                    clawServo2.servo.turnToAngle(claw2_closeDegree);
+                } else {
+                    clawServo1.servo.turnToAngle(claw1_openDegree);
+                    clawServo2.servo.turnToAngle(claw2_openDegree);
+                }
+                clawOpen = !clawOpen;
             }
 
             // update running actions
@@ -142,6 +160,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         flipServo = new ServoDevice("servoArmFlip", hardwareMap, telemetry);
         //servoArmSpinner = new ServoDevice("servoArmSpinner", hardwareMap, telemetry);
+        clawServo1= new ServoDevice("claw1", hardwareMap, telemetry);;
+        clawServo2= new ServoDevice("claw2", hardwareMap, telemetry);;
 
         try {
             MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_435);
@@ -182,13 +202,19 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         if (!flipServo.available) {
             unavailableHardwares.add("FlipServo");
         }
+        if (!clawServo1.available) {
+            unavailableHardwares.add("clawServo1");
+        }
+        if (!clawServo2.available) {
+            unavailableHardwares.add("clawServo2");
+        }
         if (vertSlideUp == null) {
             unavailableHardwares.add("vertSlideUp");
         }
         if (vertSlideDown == null) {
             unavailableHardwares.add("vertSlideDown");
         }
-        telemetry.addLine("Unavailable devices:" + String.join(", ", unavailableHardwares));
+        telemetry.addData("Unavailable devices", String.join(", ", unavailableHardwares));
     }
 
     private void vertSlideControl() {

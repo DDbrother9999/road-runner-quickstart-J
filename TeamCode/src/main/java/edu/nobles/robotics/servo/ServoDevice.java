@@ -16,8 +16,8 @@ import edu.nobles.robotics.ActionEx;
 @Config
 public class ServoDevice {
     private final String deviceName;
-    private SimpleServo servo;
     private final Telemetry telemetry;
+    public SimpleServo servo;
 
     public boolean available = true;
 
