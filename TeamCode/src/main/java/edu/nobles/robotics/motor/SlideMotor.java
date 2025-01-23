@@ -99,7 +99,6 @@ public class SlideMotor {
 
                 RobotLog.i(deviceName + " Stop");
                 telemetry.addLine(deviceName + " Stop");
-                telemetry.update();
                 lastPowerSet = 0;
                 return false;
             }
@@ -109,7 +108,6 @@ public class SlideMotor {
             telemetry.addData(deviceName + " Power:", actualPower);
             RobotLog.i(deviceName + " Power: " + actualPower);
 
-            telemetry.update();
 
             /*
             Basic cache to prevent repeats (not working, not sure why)

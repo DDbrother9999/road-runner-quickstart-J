@@ -46,6 +46,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     // if you don't rotate in steps, set it to large number, such as 400
     public static double flip0_oneStepRotationInDegree = 400;
 
+    public static long flip0_joystick_cycleTimeInMillisecond = 100;
+    public static double flip0_joystick_maxRotateDegreeInOneSecond = 30;
+
     public static double claw1_openDegree = 95;
     public static double claw1_closeDegree = 84;
     public static double claw2_openDegree = 128;
@@ -97,6 +100,13 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         }
 
         initHardware();
+
+//        if (flipServo.available) {
+//            addActionEx(flipServo.rotateWithJoystick(
+//                    () -> -gamepad1.left_stick_y,
+//                    flip0_joystick_cycleTimeInMillisecond,
+//                    flip0_joystick_maxRotateDegreeInOneSecond));
+//        }
 
         waitForStart();
 
@@ -152,10 +162,10 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 clawOpen = !clawOpen;
             }
 
-            if(intake1SpinServo != null) {
-                if (gamepadEx1.isDown(GamepadKeys.Button.RIGHT_BUMPER) ) {
+            if (intake1SpinServo != null) {
+                if (gamepadEx1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
                     intake1SpinServo.set(intake1Spin_power);
-                } else if(gamepadEx1.isDown(GamepadKeys.Button.LEFT_BUMPER)){
+                } else if (gamepadEx1.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
                     intake1SpinServo.set(-intake1Spin_power);
                 } else {
                     intake1SpinServo.set(0);
@@ -185,9 +195,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         flipServo = new ServoDevice("servo0", hardwareMap, telemetry);
         servoList.add(flipServo);
         //servoArmSpinner = new ServoDevice("servoArmSpinner", hardwareMap, telemetry);
-        clawServo1 = new ServoDevice("servo1", hardwareMap, telemetry);
+        clawServo1 = new ServoDevice("servo1", hardwareMap, telemetry, 255);
         servoList.add(clawServo1);
-        clawServo2 = new ServoDevice("servo3", hardwareMap, telemetry);
+        clawServo2 = new ServoDevice("servo3", hardwareMap, telemetry, 255);
         servoList.add(clawServo2);
         try {
             intake1SpinServo = new CRServo(hardwareMap, "servo5");
@@ -308,7 +318,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             telemetry.addData("clawServo2", clawServo2.getAngle());
         }
 
-        if(flipServo.available) {
+        if (flipServo.available) {
             telemetry.addData("flipServo", flipServo.getAngle());
         }
 

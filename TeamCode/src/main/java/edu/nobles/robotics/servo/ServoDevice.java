@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.util.function.Supplier;
+
 import edu.nobles.robotics.ActionEx;
 
 @Config
@@ -22,10 +24,14 @@ public class ServoDevice {
     public boolean available = true;
 
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
+        this(deviceName, hardwareMap, telemetry, 300); //All gobilda servos are 0 to 300
+    }
+
+    public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry, double maxAngle) {
         this.deviceName = deviceName;
         this.telemetry = telemetry;
         try {
-            servo = new SimpleServo(hardwareMap, deviceName, 0, 300, AngleUnit.DEGREES); //All gobilda servos are 0 to 300
+            servo = new SimpleServo(hardwareMap, deviceName, 0, maxAngle, AngleUnit.DEGREES); //All gobilda servos are 0 to 300
         } catch (Exception e) {
             available = false;
             RobotLog.e("Servo " + deviceName + " is not available");
@@ -80,10 +86,8 @@ public class ServoDevice {
             if (Math.abs(current - toDegree) <= 1) {
                 RobotLog.i(deviceName + " Stop");
                 telemetry.addLine(deviceName + " Stop");
-                telemetry.update();
                 return false;
             }
-            telemetry.update();
 
             if (Math.abs(current - toDegree) <= oneStepRotationInDegree) {
                 servo.turnToAngle(toDegree);
@@ -92,6 +96,52 @@ public class ServoDevice {
                 servo.rotateByAngle(oneStepRotationInDegree * sign);
             }
 
+            return true;
+        }
+    }
+
+    public class RotateWithJoystickServoAction implements ActionEx {
+        Supplier<Float> joystickPosition;
+        long nextActionTime;
+        long cycleTimeInMillisecond;
+        double maxRotateDegreeInOneSecond;
+
+        boolean initialized = false;
+        double rotateByAngle;
+
+        public RotateWithJoystickServoAction(Supplier<Float> joystickPosition, long cycleTimeInMillisecond, double maxRotateDegreeInOneSecond) {
+            this.joystickPosition = joystickPosition;
+            this.cycleTimeInMillisecond = cycleTimeInMillisecond;
+            this.maxRotateDegreeInOneSecond = maxRotateDegreeInOneSecond;
+        }
+
+        public String getDeviceName() {
+            return deviceName;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            long currentTime = System.currentTimeMillis();
+            double currentAngle = servo.getAngle();
+
+            if (!initialized) {
+                nextActionTime = currentTime;
+                initialized = true;
+            }
+
+            if (nextActionTime <= currentTime) {
+                rotateByAngle = maxRotateDegreeInOneSecond * 1000.0 / cycleTimeInMillisecond * joystickPosition.get();
+                RobotLog.i(deviceName + " Current Angle: %.1f, rotateByAngle: %.1f", currentAngle, rotateByAngle);
+                if (rotateByAngle < 1) {
+                    servo.rotateBy(0); // stop rotate
+                } else {
+                    servo.rotateByAngle(rotateByAngle, AngleUnit.DEGREES);
+                }
+
+                nextActionTime += cycleTimeInMillisecond;
+            }
+
+            telemetry.addData(deviceName, " Current Angle:" + currentAngle + " rotateByAngle:" + rotateByAngle);
             return true;
         }
     }
@@ -113,15 +163,12 @@ public class ServoDevice {
             telemetry.addData(deviceName + " To Position:", toDegree);
 
             RobotLog.i(deviceName + " To Position: %.1f", toDegree);
-            telemetry.update();
             return true;
         }
     }
 
 
-
     /**
-     *
      * @param toDegree
      * @param oneStepTimeInMillSecond if you don't rotate in steps, set this to 0
      * @param oneStepRotationInDegree if you don't rotate in steps, set it to large number, such as 400
@@ -130,7 +177,9 @@ public class ServoDevice {
         return new CustomRotateServoAction(toDegree, oneStepTimeInMillSecond, oneStepRotationInDegree);
     }
 
-    //
+    public ActionEx rotateWithJoystick(Supplier<Float> joystickPosition, long cycleTimeInMillisecond, double maxRotateDegreeInOneSecond) {
+        return new RotateWithJoystickServoAction(joystickPosition, cycleTimeInMillisecond, maxRotateDegreeInOneSecond);
+    }
 
     public ActionEx rotateNormal(double toDegree) {
         return new NormalRotateServoAction(toDegree);
