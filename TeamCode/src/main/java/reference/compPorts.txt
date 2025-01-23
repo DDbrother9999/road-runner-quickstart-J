@@ -10,9 +10,9 @@ Motors
 1 = frontRight =
 
 Servos:
-1 = servoControl1 = claw1 (left)
-3 = servoControl3 = claw2 (right)
-5 = servoControl5 = intake1spin
+1 = servo1 = claw1 (left)
+3 = servo3 = claw2 (right)
+5 = servo5 = intake1spin
 
 
 
