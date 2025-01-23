@@ -19,6 +19,7 @@ public class TestSimpleServo extends LinearOpMode {
 
     public static int slowdown = 2;
     public static int aTurnTo = 150;
+    public static double turnBy = 5;
     public static int minAng = 0;
     public static int maxAng = 300;
 
@@ -53,8 +54,11 @@ public class TestSimpleServo extends LinearOpMode {
 
             TelemetryPacket packet = new TelemetryPacket();
             packet.put("Angle", flip0.getAngle());
+            telemetry.addData("Angle", flip0.getAngle());
             packet.put("Position", flip0.getPosition());
+            telemetry.addData("Position", flip0.getPosition());
             packet.put("left_stick_y", gamepad1.left_stick_y);
+            telemetry.addData("left_stick_y", gamepad1.left_stick_y);
             packet.put("a", gamepad1.a);
             packet.put("b", gamepad1.a);
             packet.put("y", gamepad1.a);
