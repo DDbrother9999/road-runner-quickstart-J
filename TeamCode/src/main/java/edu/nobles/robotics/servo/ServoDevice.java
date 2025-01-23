@@ -130,7 +130,7 @@ public class ServoDevice {
             }
 
             if (currentTime > nextActionTime) {
-                rotateByAngle = maxRotateDegreeInOneSecond * 1000.0 / cycleTimeInMillisecond * joystickPosition.get();
+                rotateByAngle = maxRotateDegreeInOneSecond * cycleTimeInMillisecond / 1000.0 * joystickPosition.get();
                 RobotLog.i(deviceName + " Current Angle: %.1f, rotateByAngle: %.1f", currentAngle, rotateByAngle);
                 if (-1 < rotateByAngle && rotateByAngle < 1) {
                     servo.rotateBy(0); // stop rotate
