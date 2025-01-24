@@ -18,7 +18,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -36,8 +36,6 @@ import edu.nobles.robotics.servo.ServoDevice;
 @TeleOp
 @Config
 public class CombinedActionTeleOpMode extends LinearOpMode {
-    public static boolean switchGamepad1And2 = false;
-
     public static double move_XThrottle = 0.4;
     public static double move_YThrottle = 0.4;
     public static double move_RotateThrottle = 0.05;
@@ -60,13 +58,13 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     public static double intake1Spin_power = 0.25;
 
-    public static int vertUp_max = 2000;
-    public static double vertUp_maxPower = 0.25;
+    public static int vertUp_max = 3000;
+    public static float vertUp_maxPower = 0.25f;
     public static int vertUp_targetUp = 1000;
     public static int vertUp_targetDown = 0;
 
     public static int vertDown_max = 2000;
-    public static double vertDown_maxPower = vertUp_maxPower;
+    public static float vertDown_maxPower = vertUp_maxPower;
     public static int vertDown_targetUp = -1000;
     public static int vertDown_targetDown = 0;
 
@@ -221,12 +219,6 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     }
 
     private void initHardware() {
-        if (switchGamepad1And2) {
-            Gamepad temp = gamepad1;
-            gamepad1 = gamepad2;
-            gamepad2 = temp;
-        }
-
         List<ServoDevice> servoList = new ArrayList<>();
 
         mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
@@ -249,7 +241,6 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         try {
             MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, vertSlideLeftUpName, Motor.GoBILDA.RPM_435);
-            vertSlideLeftUp.setInverted(true);
             MotorEx vertSlideRightUp = new MotorEx(hardwareMap, vertSlideRightUpName, Motor.GoBILDA.RPM_435);
 
             //DON'T INVERT MOTORS AFTER HERE
@@ -304,32 +295,34 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         boolean moving = false;
 
+        power = Range.clip(power, -vertUp_maxPower, vertUp_maxPower);
         if (Math.abs(power) < 0.01) {
             // do nothing
-        }
-        if (power > 0) {
+        } else /*if (power > 0)*/ {
             // slide up
-            vertSlideDown.zeroPowerWithFloat();
+            // vertSlideDown.zeroPowerWithFloat();
 
-            if (vertSlideUp.slideMotor.getCurrentPosition() < vertUp_max) {
-                vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+            int position = vertSlideUp.slideMotor.getCurrentPosition();
+            if (!(position > vertUp_max && power > 0) && !(position < 0 && power < 0)) {
+                // vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
                 vertSlideUp.slideMotor.set(power);
                 moving = true;
             }
-        } else if (power < 0) {
-            // slide down
-            vertSlideUp.zeroPowerWithFloat();
-            if (vertSlideDown.slideMotor.getCurrentPosition() < vertDown_max) {
-                vertSlideDown.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-                vertSlideDown.slideMotor.set(-power);
-                moving = true;
-            }
         }
+//        else if (power < 0) {
+//            // slide down
+//            vertSlideUp.zeroPowerWithFloat();
+//            if (vertSlideDown.slideMotor.getCurrentPosition() < vertDown_max) {
+//                vertSlideDown.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+//                vertSlideDown.slideMotor.set(-power);
+//                moving = true;
+//            }
+//        }
 
         if (!moving) {
-            if(!vertSlideAlreadyStopped) {
+            if (!vertSlideAlreadyStopped) {
                 vertSlideUp.slideMotor.set(0);
-                vertSlideDown.slideMotor.set(0);
+                // vertSlideDown.slideMotor.set(0);
                 vertSlideAlreadyStopped = true;
             }
         } else {
@@ -347,7 +340,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 //        telemetry.addData("right_stick_x", gamepad1.right_stick_x);
 
         if (drive.available) {
-            if(currentTime > nextReportTime) {
+            if (currentTime > nextReportTime) {
                 drive.updatePoseEstimate();
             }
             telemetry.addData("x", drive.pose.position.x);
