@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -23,6 +24,9 @@ public class ServoDevice {
 
     public boolean available = true;
 
+    private double practicalMinAngle;
+    private double practicalMaxAngle;
+
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
         this(deviceName, hardwareMap, telemetry, 300); //All gobilda servos are 0 to 300
     }
@@ -30,6 +34,9 @@ public class ServoDevice {
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry, double maxAngle) {
         this.deviceName = deviceName;
         this.telemetry = telemetry;
+        this.practicalMinAngle = 0;
+        this.practicalMaxAngle = maxAngle;
+
         try {
             servo = new SimpleServo(hardwareMap, deviceName, 0, maxAngle, AngleUnit.DEGREES); //All gobilda servos are 0 to 300
         } catch (Exception e) {
@@ -37,6 +44,11 @@ public class ServoDevice {
             RobotLog.e("Servo " + deviceName + " is not available");
             return;
         }
+    }
+
+    public void setPracticalAngles(double practicalMinAngle, double practicalMaxAngle) {
+        this.practicalMinAngle = practicalMinAngle;
+        this.practicalMaxAngle = practicalMaxAngle;
     }
 
     public String getDeviceName() {
@@ -122,7 +134,7 @@ public class ServoDevice {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             long currentTime = System.currentTimeMillis();
-            double currentAngle = servo.getAngle();
+            double currentAngle = servo.getAngle(AngleUnit.DEGREES);
 
             if (!initialized) {
                 nextActionTime = currentTime;
@@ -135,6 +147,7 @@ public class ServoDevice {
                 if (-1 < rotateByAngle && rotateByAngle < 1) {
                     servo.rotateBy(0); // stop rotate
                 } else {
+                    rotateByAngle = Range.clip(rotateByAngle, practicalMinAngle - currentAngle, practicalMaxAngle - currentAngle);
                     servo.rotateByAngle(rotateByAngle, AngleUnit.DEGREES);
                 }
 
@@ -174,14 +187,23 @@ public class ServoDevice {
      * @param oneStepRotationInDegree if you don't rotate in steps, set it to large number, such as 400
      */
     public ActionEx rotateCustom(double toDegree, long oneStepTimeInMillSecond, double oneStepRotationInDegree) {
-        return new CustomRotateServoAction(toDegree, oneStepTimeInMillSecond, oneStepRotationInDegree);
+        if (available)
+            return new CustomRotateServoAction(toDegree, oneStepTimeInMillSecond, oneStepRotationInDegree);
+        else
+            return new ActionEx.NullActionEx();
     }
 
     public ActionEx rotateWithJoystick(Supplier<Float> joystickPosition, long cycleTimeInMillisecond, double maxRotateDegreeInOneSecond) {
-        return new RotateWithJoystickServoAction(joystickPosition, cycleTimeInMillisecond, maxRotateDegreeInOneSecond);
+        if (available)
+            return new RotateWithJoystickServoAction(joystickPosition, cycleTimeInMillisecond, maxRotateDegreeInOneSecond);
+        else
+            return new ActionEx.NullActionEx();
     }
 
     public ActionEx rotateNormal(double toDegree) {
-        return new NormalRotateServoAction(toDegree);
+        if (available)
+            return new NormalRotateServoAction(toDegree);
+        else
+            return new ActionEx.NullActionEx();
     }
 }

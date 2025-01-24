@@ -10,9 +10,9 @@ Motors
 1 = frontRight =
 
 Servos:
-1 = servo1 = claw1 (left)
-3 = servo3 = claw2 (right)
-5 = servo5 = intake1spin
+1 = servo1 =
+3 = servo3 = intake1Flip done
+5 = servo5 = intake1spin  continuous servo  done
 
 
 
@@ -27,6 +27,8 @@ Expansion Hub
 2 = vertSlideLeftUp
 
 Servos
-1 = servoExp1 = intake1Flip
+
+0 = servoExp0 = claw1 (left) done
+1 = servoExp1 = claw2 (right) done
 3 = servoExp3 = intake1SlideRetract
 5 = servoExp5 = intake1SlideExtend

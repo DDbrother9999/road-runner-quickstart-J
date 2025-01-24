@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.nobles.robotics.ActionEx;
+import edu.nobles.robotics.motor.HorizontalExtender;
 import edu.nobles.robotics.motor.MotorGroupEx;
 import edu.nobles.robotics.motor.SlideMotor;
 import edu.nobles.robotics.servo.ServoDevice;
@@ -38,8 +39,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double move_YThrottle = 0.4;
     public static double move_RotateThrottle = 0.05;
 
-    public static double flip0_initDegree = 0;
-    public static double flip0_flatDegree = 300;
+    public static double flip0_initDegree = 55;
+    public static double flip0_flatDegree = 256;
 
     // if you don't rotate in steps, set this to 0
     public static long flip0_oneStepTimeInMillSecond = 0;
@@ -47,12 +48,12 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double flip0_oneStepRotationInDegree = 400;
 
     public static long flip0_joystick_cycleTimeInMillisecond = 100;
-    public static double flip0_joystick_maxRotateDegreeInOneSecond = 30;
+    public static double flip0_joystick_maxRotateDegreeInOneSecond = 90;
 
-    public static double claw1_openDegree = 95;
-    public static double claw1_closeDegree = 84;
-    public static double claw2_openDegree = 128;
-    public static double claw2_closeDegree = 143;
+    public static double claw1_openDegree = 93;
+    public static double claw1_closeDegree = 85;
+    public static double claw2_openDegree = 131;
+    public static double claw2_closeDegree = 141;
 
     public static double intake1Spin_power = 0.25;
 
@@ -68,8 +69,14 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
 
     //Vertical Slider's Position Controller
-    public static double vertSlide_kP = 0.05;
+    public static double vertSlide_kP = 0.005;
     public static double vertSlide_positionTolerance = 15;   // allowed maximum error
+
+    /**
+     * factor of retracter power / extender power
+     */
+    public static double horizontalExtender_retracterPowerFactor = 1.0;
+    public static double horizontalExtender_joystickMaxPower = 0.5;
 
     private List<Action> runningActions = new ArrayList<>();
 
@@ -81,9 +88,11 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     private ServoDevice clawServo1;
     private ServoDevice clawServo2;
     private CRServo intake1SpinServo;
-    private ServoDevice servoArmSpinner;
     private SlideMotor vertSlideUp;
     private SlideMotor vertSlideDown;
+
+    private HorizontalExtender horizontalExtender;
+
     private GamepadEx gamepadEx1;
     private GamepadEx gamepadEx2;
 
@@ -101,12 +110,14 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         initHardware();
 
-//        if (flipServo.available) {
-//            addActionEx(flipServo.rotateWithJoystick(
-//                    () -> -gamepad1.left_stick_y,
-//                    flip0_joystick_cycleTimeInMillisecond,
-//                    flip0_joystick_maxRotateDegreeInOneSecond));
-//        }
+        addActionEx(flipServo.rotateWithJoystick(
+                () -> -gamepad1.left_stick_y,
+                flip0_joystick_cycleTimeInMillisecond,
+                flip0_joystick_maxRotateDegreeInOneSecond));
+
+        addActionEx(horizontalExtender.runWithJoystick(
+                () -> -gamepad1.right_stick_y,
+                horizontalExtender_joystickMaxPower));
 
         waitForStart();
 
@@ -125,7 +136,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                         -gamepad1.right_stick_x * move_RotateThrottle
                 ));
             } else {
-                vertSlideControl();
+               // vertSlideControl();
             }
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B) && flipServo.available) {
@@ -192,13 +203,16 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         List<ServoDevice> servoList = new ArrayList<>();
 
         mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        flipServo = new ServoDevice("servo0", hardwareMap, telemetry);
+
+        flipServo = new ServoDevice("servo3", hardwareMap, telemetry);
+        flipServo.setPracticalAngles(flip0_initDegree, flip0_flatDegree);
         servoList.add(flipServo);
-        //servoArmSpinner = new ServoDevice("servoArmSpinner", hardwareMap, telemetry);
-        clawServo1 = new ServoDevice("servo1", hardwareMap, telemetry, 255);
+
+        clawServo1 = new ServoDevice("servoExp0", hardwareMap, telemetry, 255);
         servoList.add(clawServo1);
-        clawServo2 = new ServoDevice("servo3", hardwareMap, telemetry, 255);
+        clawServo2 = new ServoDevice("servoExp1", hardwareMap, telemetry, 255);
         servoList.add(clawServo2);
+
         try {
             intake1SpinServo = new CRServo(hardwareMap, "servo5");
             intake1SpinServo.setInverted(true);
@@ -234,6 +248,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             RobotLog.e("VertSlideDown are not available");
         }
 
+        horizontalExtender = new HorizontalExtender("servoExp5", "servoExp3", hardwareMap, telemetry);
+
         //GAMEPADS
         gamepadEx1 = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
@@ -250,6 +266,10 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         if (intake1SpinServo == null) {
             unavailableHardwares.add("intake1SpinServo");
         }
+
+        if(!horizontalExtender.available)
+            unavailableHardwares.add("horizontalExtender");
+
         unavailableHardwares.addAll(
                 servoList.stream().filter(servo -> !servo.available).map(ServoDevice::getDeviceName).collect(Collectors.toList()));
     }
