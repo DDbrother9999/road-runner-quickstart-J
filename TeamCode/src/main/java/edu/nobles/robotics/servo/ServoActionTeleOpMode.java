@@ -67,8 +67,8 @@ public class ServoActionTeleOpMode extends LinearOpMode {
                 // Remove current Flip action
                 runningActions.removeIf(a -> a instanceof CustomRotateServoAction
                         && flipServo.getDeviceName().equals(((CustomRotateServoAction) a).getDeviceName()));
-                runningActions.add(flipServo.rotateCustom(flipFlat ? flip0_initDegree : flip0_flatDegree,
-                        flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
+                runningActions.add(flipServo.rotateCustom(flipFlat ? intake1Flip_initDegree : intake1Flip_flatDegree,
+                        intake1Flip_oneStepTime, intake1Flip_oneStepRotation));
                 flipFlat = !flipFlat;
             }
 

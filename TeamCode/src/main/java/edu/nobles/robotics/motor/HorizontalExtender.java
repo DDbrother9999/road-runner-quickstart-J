@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -42,10 +41,10 @@ public class HorizontalExtender {
             retracter.set(0);
         } else if (power > 0) {
             extender.set(power);
-            retracter.set(power * CombinedActionTeleOpMode.horizontalExtender_extendingPowerFactor);
+            retracter.set(power * CombinedActionTeleOpMode.intakeSlide_extendFactor);
         } else {
             retracter.set(power);
-            extender.set(power * CombinedActionTeleOpMode.horizontalExtender_retractingPowerFactor);
+            extender.set(power * CombinedActionTeleOpMode.intakeSlide_retractFactor);
         }
     }
 
@@ -91,8 +90,6 @@ public class HorizontalExtender {
             if (System.currentTimeMillis() > endTime)
                 return false;
 
-            telemetry.addData(deviceName, "Extender power:", extender.get() + " retracter power:" + retracter.get());
-
             return true;
         }
     }
@@ -116,8 +113,6 @@ public class HorizontalExtender {
                 return false;
 
             setPower(maxPower * joystickPosition.get());
-
-            telemetry.addData(deviceName, "Extender power:", extender.get() + " retracter power:" + retracter.get());
 
             return true;
         }

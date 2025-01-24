@@ -1,7 +1,6 @@
 package edu.nobles.robotics.servo;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -11,7 +10,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode.*;
 
-@Config
 @Autonomous(name = "FlipServoTest", group = "Autonomous")
 public class FlipServoTestOpMode extends LinearOpMode {
     @Override
@@ -25,14 +23,14 @@ public class FlipServoTestOpMode extends LinearOpMode {
         while (opModeIsActive()) {
             Actions.runBlocking(
                     new SequentialAction(
-                            flipServo.rotateCustom(flip0_initDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
+                            flipServo.rotateCustom(intake1Flip_initDegree, intake1Flip_oneStepTime, intake1Flip_oneStepRotation),
                             new SleepAction(5),
-                            flipServo.rotateCustom(flip0_flatDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree),
+                            flipServo.rotateCustom(intake1Flip_flatDegree, intake1Flip_oneStepTime, intake1Flip_oneStepRotation),
                             new SleepAction(5)
                     )
             );
         }
 
-        Actions.runBlocking(flipServo.rotateCustom(50, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
+        Actions.runBlocking(flipServo.rotateCustom(50, intake1Flip_oneStepTime, intake1Flip_oneStepRotation));
     }
 }

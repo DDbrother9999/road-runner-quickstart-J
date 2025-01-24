@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static edu.nobles.robotics.DeviceNameList.*;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -16,6 +18,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -33,22 +36,22 @@ import edu.nobles.robotics.servo.ServoDevice;
 @TeleOp
 @Config
 public class CombinedActionTeleOpMode extends LinearOpMode {
-    public static boolean useGamepadForMoving = false;
+    public static boolean switchGamepad1And2 = false;
 
     public static double move_XThrottle = 0.4;
     public static double move_YThrottle = 0.4;
     public static double move_RotateThrottle = 0.05;
 
-    public static double flip0_initDegree = 55;
-    public static double flip0_flatDegree = 256;
+    public static double intake1Flip_initDegree = 61;
+    public static double intake1Flip_flatDegree = 258;
 
     // if you don't rotate in steps, set this to 0
-    public static long flip0_oneStepTimeInMillSecond = 0;
+    public static long intake1Flip_oneStepTime = 0;
     // if you don't rotate in steps, set it to large number, such as 400
-    public static double flip0_oneStepRotationInDegree = 400;
+    public static double intake1Flip_oneStepRotation = 400;
 
-    public static long flip0_joystick_cycleTimeInMillisecond = 100;
-    public static double flip0_joystick_maxRotateDegreeInOneSecond = 60;
+    public static long intake1Flip_m_cycleTime = 100;
+    public static double intake1Flip_m_rotateInSec = 60;
 
     public static double claw1_openDegree = 93;
     public static double claw1_closeDegree = 85;
@@ -75,31 +78,33 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     /**
      * factor of retracter power / extender power when extending
      */
-    public static double horizontalExtender_extendingPowerFactor = 0.8;
+    public static double intakeSlide_extendFactor = 0.8;
     /**
      * factor of extender power / retracter power when retracting
      */
-    public static double horizontalExtender_retractingPowerFactor = 1.2;
+    public static double intakeSlide_retractFactor = 1.2;
 
-    public static double horizontalExtender_joystickMaxPower = 0.5;
+    public static double intakeSlide_joystickMaxPower = 0.5;
 
     private List<Action> runningActions = new ArrayList<>();
 
     private boolean flipFlat = false;
-    private boolean clawOpen = true;
 
     private MecanumDrive mecanumDrive;
-    private ServoDevice flipServo;
+    private ServoDevice intake1FlipServo;
     private ServoDevice clawServo1;
     private ServoDevice clawServo2;
     private CRServo intake1SpinServo;
     private SlideMotor vertSlideUp;
     private SlideMotor vertSlideDown;
+    private boolean vertSlideAlreadyStopped;
 
     private HorizontalExtender horizontalExtender;
 
     private GamepadEx gamepadEx1;
     private GamepadEx gamepadEx2;
+
+    private long nextReportTime;
 
     private final List<String> unavailableHardwares = new ArrayList<>();
 
@@ -115,14 +120,26 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         initHardware();
 
-        addActionEx(flipServo.rotateWithJoystick(
-                () -> -gamepad1.left_stick_y,
-                flip0_joystick_cycleTimeInMillisecond,
-                flip0_joystick_maxRotateDegreeInOneSecond));
+        addActionEx(intake1FlipServo.manualRotate(
+                () -> {
+                    if (gamepad1.dpad_up) return 1f;
+                    if (gamepad1.dpad_down) return -1f;
+                    if (gamepad2.dpad_up) return 1f;
+                    if (gamepad2.dpad_down) return -1f;
+                    return 0f;
+                },
+                intake1Flip_m_cycleTime,
+                intake1Flip_m_rotateInSec));
 
         addActionEx(horizontalExtender.runWithJoystick(
-                () -> -gamepad1.right_stick_y,
-                horizontalExtender_joystickMaxPower));
+                () -> {
+                    if (gamepad1.left_trigger > 0.1) return gamepad1.left_trigger;
+                    if (gamepad1.right_trigger > 0.1) return -gamepad1.right_trigger;
+                    if (gamepad2.left_trigger > 0.1) return gamepad2.left_trigger;
+                    if (gamepad2.right_trigger > 0.1) return -gamepad2.right_trigger;
+                    return 0f;
+                },
+                intakeSlide_joystickMaxPower));
 
         waitForStart();
 
@@ -132,60 +149,59 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             gamepadEx2.readButtons();
 
             // updated based on gamepads
-            if (useGamepadForMoving && mecanumDrive.available) {
+            if (mecanumDrive.available) {
                 mecanumDrive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
                                 -gamepad1.left_stick_y * move_XThrottle,
-                                -gamepad1.left_stick_x * move_YThrottle
-                        ),
-                        -gamepad1.right_stick_x * move_RotateThrottle
-                ));
-            } else {
-               // vertSlideControl();
+                                -gamepad1.left_stick_x * move_YThrottle),
+                        -gamepad1.right_stick_x * move_RotateThrottle));
             }
 
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.B) && flipServo.available) {
+            if (intake1SpinServo != null) {
+                if (gamepadEx1.isDown(GamepadKeys.Button.LEFT_BUMPER) || gamepadEx2.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
+                    intake1SpinServo.set(intake1Spin_power);
+                } else if (gamepadEx1.isDown(GamepadKeys.Button.RIGHT_BUMPER) || gamepadEx2.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
+                    intake1SpinServo.set(-intake1Spin_power);
+                } else {
+                    intake1SpinServo.set(0);
+                }
+            }
+
+            // TODO: comment out this block
+            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.BACK) && intake1FlipServo.available) {
                 RobotLog.i("Add flip0 action");
-                double toDegree = flipFlat ? flip0_initDegree : flip0_flatDegree;
-                addActionEx(flipServo.rotateCustom(toDegree, flip0_oneStepTimeInMillSecond, flip0_oneStepRotationInDegree));
+                double toDegree = flipFlat ? intake1Flip_initDegree : intake1Flip_flatDegree;
+                addActionEx(intake1FlipServo.rotateCustom(toDegree, intake1Flip_oneStepTime, intake1Flip_oneStepRotation));
                 flipFlat = !flipFlat;
             }
 
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.Y) && vertSlideUp != null && vertSlideDown != null) {
+            vertSlideControl(-gamepad2.left_stick_y);
+
+            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.Y) && vertSlideUp != null && vertSlideDown != null) {
                 RobotLog.i("Add slide up");
                 // vertSlideDown.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(vertUp_targetUp, vertUp_maxPower));
                 addActionEx(vertSlideDown.moveSlide(vertDown_targetUp, vertDown_maxPower));
             }
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.X) && vertSlideUp != null && vertSlideDown != null) {
+            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.X) && vertSlideUp != null && vertSlideDown != null) {
                 RobotLog.i("Add slide down");
                 // vertSlideUp.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(vertUp_targetDown, vertUp_maxPower));
                 addActionEx(vertSlideDown.moveSlide(vertDown_targetDown, vertDown_maxPower));
             }
-            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
-                if (clawOpen) {
-                    if (clawServo1.available)
-                        clawServo1.servo.turnToAngle(claw1_closeDegree, AngleUnit.DEGREES);
-                    if (clawServo2.available)
-                        clawServo2.servo.turnToAngle(claw2_closeDegree, AngleUnit.DEGREES);
-                } else {
-                    if (clawServo1.available)
-                        clawServo1.servo.turnToAngle(claw1_openDegree, AngleUnit.DEGREES);
-                    if (clawServo2.available)
-                        clawServo2.servo.turnToAngle(claw2_openDegree, AngleUnit.DEGREES);
-                }
-                clawOpen = !clawOpen;
+
+            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) {
+                if (clawServo1.available)
+                    clawServo1.servo.turnToAngle(claw1_openDegree, AngleUnit.DEGREES);
+                if (clawServo2.available)
+                    clawServo2.servo.turnToAngle(claw2_openDegree, AngleUnit.DEGREES);
             }
 
-            if (intake1SpinServo != null) {
-                if (gamepadEx1.isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
-                    intake1SpinServo.set(intake1Spin_power);
-                } else if (gamepadEx1.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
-                    intake1SpinServo.set(-intake1Spin_power);
-                } else {
-                    intake1SpinServo.set(0);
-                }
+            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.B)) {
+                if (clawServo1.available)
+                    clawServo1.servo.turnToAngle(claw1_closeDegree, AngleUnit.DEGREES);
+                if (clawServo2.available)
+                    clawServo2.servo.turnToAngle(claw2_closeDegree, AngleUnit.DEGREES);
             }
 
             // update running actions
@@ -205,30 +221,36 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     }
 
     private void initHardware() {
+        if (switchGamepad1And2) {
+            Gamepad temp = gamepad1;
+            gamepad1 = gamepad2;
+            gamepad2 = temp;
+        }
+
         List<ServoDevice> servoList = new ArrayList<>();
 
         mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-        flipServo = new ServoDevice("servo3", hardwareMap, telemetry);
-        flipServo.setPracticalAngles(flip0_initDegree, flip0_flatDegree);
-        servoList.add(flipServo);
+        intake1FlipServo = new ServoDevice(intake1FlipName, hardwareMap, telemetry);
+        intake1FlipServo.setPracticalAngles(intake1Flip_initDegree, intake1Flip_flatDegree);
+        servoList.add(intake1FlipServo);
 
-        clawServo1 = new ServoDevice("servoExp0", hardwareMap, telemetry, 255);
+        clawServo1 = new ServoDevice(clawLeftName, hardwareMap, telemetry, 255);
         servoList.add(clawServo1);
-        clawServo2 = new ServoDevice("servoExp1", hardwareMap, telemetry, 255);
+        clawServo2 = new ServoDevice(clawRightName, hardwareMap, telemetry, 255);
         servoList.add(clawServo2);
 
         try {
-            intake1SpinServo = new CRServo(hardwareMap, "servo5");
+            intake1SpinServo = new CRServo(hardwareMap, intake1spinName);
             intake1SpinServo.setInverted(true);
         } catch (Exception e) {
             RobotLog.e("intake1SpinServo is not available");
         }
 
         try {
-            MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, "vertSlideLeftUp", Motor.GoBILDA.RPM_435);
+            MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, vertSlideLeftUpName, Motor.GoBILDA.RPM_435);
             vertSlideLeftUp.setInverted(true);
-            MotorEx vertSlideRightUp = new MotorEx(hardwareMap, "vertSlideRightUp", Motor.GoBILDA.RPM_435);
+            MotorEx vertSlideRightUp = new MotorEx(hardwareMap, vertSlideRightUpName, Motor.GoBILDA.RPM_435);
 
             //DON'T INVERT MOTORS AFTER HERE
             MotorGroupEx vertSlideUpGroup = new MotorGroupEx(vertSlideRightUp, vertSlideLeftUp);
@@ -240,9 +262,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         }
 
         try {
-            MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, "vertSlideLeftDown", Motor.GoBILDA.RPM_312);
+            MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, vertSlideLeftDownName, Motor.GoBILDA.RPM_312);
             vertSlideLeftDown.setInverted(true);
-            MotorEx vertSlideRightDown = new MotorEx(hardwareMap, "vertSlideRightDown", Motor.GoBILDA.RPM_312);
+            MotorEx vertSlideRightDown = new MotorEx(hardwareMap, vertSlideRightDownName, Motor.GoBILDA.RPM_312);
 
             //DON'T INVERT MOTORS AFTER HERE
             MotorGroupEx vertSlideDownGroup = new MotorGroupEx(vertSlideRightDown, vertSlideLeftDown);
@@ -253,7 +275,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             RobotLog.e("VertSlideDown are not available");
         }
 
-        horizontalExtender = new HorizontalExtender("servoExp5", "servoExp3", hardwareMap, telemetry);
+        horizontalExtender = new HorizontalExtender(intake1SlideExtendName, intake1SlideRetractName, hardwareMap, telemetry);
 
         //GAMEPADS
         gamepadEx1 = new GamepadEx(gamepad1);
@@ -272,45 +294,52 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             unavailableHardwares.add("intake1SpinServo");
         }
 
-        if(!horizontalExtender.available)
-            unavailableHardwares.add("horizontalExtender");
+        if (!horizontalExtender.available) unavailableHardwares.add("horizontalExtender");
 
-        unavailableHardwares.addAll(
-                servoList.stream().filter(servo -> !servo.available).map(ServoDevice::getDeviceName).collect(Collectors.toList()));
+        unavailableHardwares.addAll(servoList.stream().filter(servo -> !servo.available).map(ServoDevice::getDeviceName).collect(Collectors.toList()));
     }
 
-    private void vertSlideControl() {
-        if (vertSlideUp == null || vertSlideDown == null)
-            return;
+    private void vertSlideControl(float power) {
+        if (vertSlideUp == null || vertSlideDown == null) return;
 
         boolean moving = false;
-        float upPower = -gamepad1.left_stick_y;
-        if (upPower > 0) {
+
+        if (Math.abs(power) < 0.01) {
+            // do nothing
+        }
+        if (power > 0) {
             // slide up
             vertSlideDown.zeroPowerWithFloat();
 
             if (vertSlideUp.slideMotor.getCurrentPosition() < vertUp_max) {
                 vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-                vertSlideUp.slideMotor.set(upPower);
+                vertSlideUp.slideMotor.set(power);
                 moving = true;
             }
-        } else if (upPower < 0) {
+        } else if (power < 0) {
             // slide down
             vertSlideUp.zeroPowerWithFloat();
             if (vertSlideDown.slideMotor.getCurrentPosition() < vertDown_max) {
                 vertSlideDown.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-                vertSlideDown.slideMotor.set(-upPower);
+                vertSlideDown.slideMotor.set(-power);
                 moving = true;
             }
         }
 
         if (!moving) {
-            vertSlideUp.slideMotor.set(0);
-            vertSlideDown.slideMotor.set(0);
+            if(!vertSlideAlreadyStopped) {
+                vertSlideUp.slideMotor.set(0);
+                vertSlideDown.slideMotor.set(0);
+                vertSlideAlreadyStopped = true;
+            }
+        } else {
+            vertSlideAlreadyStopped = false;
         }
     }
 
     private void report(MecanumDrive drive, TelemetryPacket packet) {
+        long currentTime = System.currentTimeMillis();
+
         telemetry.addData("Unavailable devices", String.join(", ", unavailableHardwares));
 
         telemetry.addData("left_stick_y", gamepad1.left_stick_y);
@@ -318,10 +347,12 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 //        telemetry.addData("right_stick_x", gamepad1.right_stick_x);
 
         if (drive.available) {
-            drive.updatePoseEstimate();
+            if(currentTime > nextReportTime) {
+                drive.updatePoseEstimate();
+            }
             telemetry.addData("x", drive.pose.position.x);
             telemetry.addData("y", drive.pose.position.y);
-            telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+            telemetry.addData("heading (deg)", Math.round(Math.toDegrees(drive.pose.heading.toDouble())));
         }
 
         if (vertSlideUp != null) {
@@ -343,10 +374,6 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             telemetry.addData("clawServo2", clawServo2.getAngle());
         }
 
-        if (flipServo.available) {
-            telemetry.addData("flipServo", flipServo.getAngle());
-        }
-
         telemetry.update();
 
         packet.fieldOverlay().setStroke("#3F51B5");
@@ -354,6 +381,10 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
         }
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
+
+        if (currentTime > nextReportTime) {
+            nextReportTime = currentTime + 500;
+        }
     }
 
     private void addActionEx(ActionEx actionEx) {
@@ -363,7 +394,6 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     private void removeExistingAction(String deviceName) {
         // Remove current action
-        runningActions.removeIf(a -> a instanceof ActionEx
-                && deviceName.equals(((ActionEx) a).getDeviceName()));
+        runningActions.removeIf(a -> a instanceof ActionEx && deviceName.equals(((ActionEx) a).getDeviceName()));
     }
 }

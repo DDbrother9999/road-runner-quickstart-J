@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Drawing;
@@ -30,16 +31,12 @@ import edu.nobles.robotics.motor.SlideMotor.PosMoveSlideAction;
 
 @TeleOp
 @Config
-
-
 public class SimpleMotorAction extends LinearOpMode {
 
     private boolean extended = false;
 
-    public static double xThrottle = 0.4;
-    public static double yThrottle = 0.4;
-    public static double headThrottle = 0.05;
     public static String motorName = "vertSlideLeftUp";
+    public static double maxPower = 0.5;
 
     private List<Action> runningActions = new ArrayList<>();
     private MotorGroupEx motorGroupSolo;
@@ -52,7 +49,7 @@ public class SimpleMotorAction extends LinearOpMode {
         motorGroupSolo = new MotorGroupEx(simpleMotor);
         SlideMotor motorSlide0 = new SlideMotor(motorGroupSolo, telemetry, "simpleMotor");
         motorSlide0.setManualMode();
-        motorGroupSolo.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        // motorGroupSolo.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
@@ -66,20 +63,8 @@ public class SimpleMotorAction extends LinearOpMode {
             gamepadEx1.readButtons();
             gamepadEx2.readButtons();
 
-
-            motorSlide0.slideMotor.set(-gamepad1.left_stick_y);
-
-            // updated based on gamepads
-            /*
-            drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            -gamepad1.left_stick_y * xThrottle,
-                            -gamepad1.left_stick_x * yThrottle
-                    ),
-                    -gamepad1.right_stick_x * headThrottle
-            ));
-
-             */
+            double power = Range.clip(-gamepad1.left_stick_y, -maxPower, maxPower);
+            motorSlide0.slideMotor.set(power);
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) {
                 RobotLog.i("Add extend action");
@@ -109,19 +94,19 @@ public class SimpleMotorAction extends LinearOpMode {
     private void report(MecanumDrive drive, TelemetryPacket packet) {
         telemetry.addData("vertSlide position", motorGroupSolo.getCurrentPosition());
 
-        drive.updatePoseEstimate();
+        //drive.updatePoseEstimate();
 
         telemetry.addData("left_stick_y", gamepad1.left_stick_y);
         telemetry.addData("left_stick_x", gamepad1.left_stick_x);
         telemetry.addData("right_stick_x", gamepad1.right_stick_x);
 
-        telemetry.addData("x", drive.pose.position.x);
-        telemetry.addData("y", drive.pose.position.y);
-        telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+//        telemetry.addData("x", drive.pose.position.x);
+//        telemetry.addData("y", drive.pose.position.y);
+//        telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
         telemetry.update();
 
-        packet.fieldOverlay().setStroke("#3F51B5");
-        Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
-        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+//        packet.fieldOverlay().setStroke("#3F51B5");
+//        Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
+//        FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 }

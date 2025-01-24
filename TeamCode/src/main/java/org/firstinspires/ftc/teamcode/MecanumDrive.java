@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static edu.nobles.robotics.DeviceNameList.*;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -236,10 +238,10 @@ public final class MecanumDrive {
         try {
             // TODO: make sure your config has motors with these names (or change them)
             //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-            leftFront = hardwareMap.get(DcMotorEx.class, "frontLeft");
-            leftBack = hardwareMap.get(DcMotorEx.class, "backLeft");
-            rightBack = hardwareMap.get(DcMotorEx.class, "backRight");
-            rightFront = hardwareMap.get(DcMotorEx.class, "frontRight");
+            leftFront = hardwareMap.get(DcMotorEx.class, frontLeftName);
+            leftBack = hardwareMap.get(DcMotorEx.class, backLeftName);
+            rightBack = hardwareMap.get(DcMotorEx.class, backRightName);
+            rightFront = hardwareMap.get(DcMotorEx.class, frontRightName);
         } catch (Exception e) {
             RobotLog.e("MecanumDrive is not available");
             available = false;

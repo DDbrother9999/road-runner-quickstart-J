@@ -1,5 +1,9 @@
 package edu.nobles.robotics.servo;
 
+import static java.lang.String.*;
+
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -16,7 +20,6 @@ import java.util.function.Supplier;
 
 import edu.nobles.robotics.ActionEx;
 
-@Config
 public class ServoDevice {
     private final String deviceName;
     private final Telemetry telemetry;
@@ -110,17 +113,20 @@ public class ServoDevice {
         }
     }
 
-    public class RotateWithJoystickServoAction implements ActionEx {
-        Supplier<Float> joystickPosition;
+    public class ManualRotateServoAction implements ActionEx {
+        Supplier<Float> controlFunction;
         long nextActionTime;
         long cycleTimeInMillisecond;
         double maxRotateDegreeInOneSecond;
 
         boolean initialized = false;
-        double rotateByAngle;
+        double rotateByReport;
 
-        public RotateWithJoystickServoAction(Supplier<Float> joystickPosition, long cycleTimeInMillisecond, double maxRotateDegreeInOneSecond) {
-            this.joystickPosition = joystickPosition;
+        /**
+         * @param controlFunction return close to 0, stop rotate. return positive number, rotate forward. return negative number, rotate backward
+         */
+        public ManualRotateServoAction(Supplier<Float> controlFunction, long cycleTimeInMillisecond, double maxRotateDegreeInOneSecond) {
+            this.controlFunction = controlFunction;
             this.cycleTimeInMillisecond = cycleTimeInMillisecond;
             this.maxRotateDegreeInOneSecond = maxRotateDegreeInOneSecond;
         }
@@ -129,6 +135,7 @@ public class ServoDevice {
             return deviceName;
         }
 
+        @SuppressLint("DefaultLocale")
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             long currentTime = System.currentTimeMillis();
@@ -140,18 +147,19 @@ public class ServoDevice {
             }
 
             if (currentTime > nextActionTime) {
-                rotateByAngle = maxRotateDegreeInOneSecond * cycleTimeInMillisecond / 1000.0 * joystickPosition.get();
+                double rotateByAngle = maxRotateDegreeInOneSecond * cycleTimeInMillisecond / 1000.0 * controlFunction.get();
                 if (-1 < rotateByAngle && rotateByAngle < 1) {
                     servo.rotateBy(0); // stop rotate
                 } else {
                     rotateByAngle = Range.clip(rotateByAngle, practicalMinAngle - currentAngle, practicalMaxAngle - currentAngle);
                     servo.rotateByAngle(rotateByAngle, AngleUnit.DEGREES);
+                    rotateByReport = rotateByAngle;
                 }
 
                 nextActionTime += cycleTimeInMillisecond;
             }
 
-            telemetry.addData(deviceName, " Current Angle:" + currentAngle + " rotateByAngle:" + rotateByAngle);
+            telemetry.addData(deviceName,  format("Current:  %.1f, rotateBy: %.1f", currentAngle, rotateByReport));
             return true;
         }
     }
@@ -189,9 +197,12 @@ public class ServoDevice {
             return new ActionEx.NullActionEx();
     }
 
-    public ActionEx rotateWithJoystick(Supplier<Float> joystickPosition, long cycleTimeInMillisecond, double maxRotateDegreeInOneSecond) {
+    /**
+     * @param controlFunction return 0, stop rotate. return 1, rotate forward. return -1, rotate backward
+     */
+    public ActionEx manualRotate(Supplier<Float> controlFunction, long cycleTimeInMillisecond, double maxRotateDegreeInOneSecond) {
         if (available)
-            return new RotateWithJoystickServoAction(joystickPosition, cycleTimeInMillisecond, maxRotateDegreeInOneSecond);
+            return new ManualRotateServoAction(controlFunction, cycleTimeInMillisecond, maxRotateDegreeInOneSecond);
         else
             return new ActionEx.NullActionEx();
     }

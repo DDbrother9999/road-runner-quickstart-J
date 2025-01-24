@@ -12,8 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-@TeleOp
-@Config
+// @TeleOp
 public class SimpleDistanceSensor extends LinearOpMode {
 
 

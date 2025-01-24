@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Config
 @Autonomous(name = "HelloWorldAutoOpMode", group = "Autonomous")
 public class HelloWorldAutoOpMode extends LinearOpMode {
     @Override
