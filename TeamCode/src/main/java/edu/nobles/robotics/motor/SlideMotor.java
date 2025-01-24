@@ -92,7 +92,7 @@ public class SlideMotor {
 
             telemetry.addData(deviceName + " Current Position:", current);
 
-            RobotLog.i(deviceName + " Current Position: " + current);
+            // RobotLog.i(deviceName + " Current Position: " + current);
 
             if (slideMotor.atTargetPosition()) {
                 slideMotor.stopMotor();
@@ -106,7 +106,7 @@ public class SlideMotor {
             slideMotor.set(maxPower);
             double actualPower = slideMotor.get();
             telemetry.addData(deviceName + " Power:", actualPower);
-            RobotLog.i(deviceName + " Power: " + actualPower);
+            // RobotLog.i(deviceName + " Power: " + actualPower + " maxPower:"+maxPower);
 
 
             /*

@@ -179,13 +179,13 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 RobotLog.i("Add slide up");
                 // vertSlideDown.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(vertUp_targetUp, vertUp_maxPower));
-                addActionEx(vertSlideDown.moveSlide(vertDown_targetUp, vertDown_maxPower));
+                //addActionEx(vertSlideDown.moveSlide(vertDown_targetUp, vertDown_maxPower));
             }
             if (gamepadEx2.wasJustPressed(GamepadKeys.Button.X) && vertSlideUp != null && vertSlideDown != null) {
                 RobotLog.i("Add slide down");
                 // vertSlideUp.zeroPowerWithFloat();
-                addActionEx(vertSlideUp.moveSlide(vertUp_targetDown, vertUp_maxPower));
-                addActionEx(vertSlideDown.moveSlide(vertDown_targetDown, vertDown_maxPower));
+                addActionEx(vertSlideUp.moveSlide(vertUp_targetDown, vertDown_maxPower));
+                //addActionEx(vertSlideDown.moveSlide(vertDown_targetDown, vertDown_maxPower));
             }
 
             if (gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) {
@@ -303,7 +303,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             // vertSlideDown.zeroPowerWithFloat();
 
             int position = vertSlideUp.slideMotor.getCurrentPosition();
-            if (!(position > vertUp_max && power > 0) && !(position < 0 && power < 0)) {
+            if (!(position > vertUp_max && power > 0) ) {
                 // vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
                 vertSlideUp.slideMotor.set(power);
                 moving = true;
