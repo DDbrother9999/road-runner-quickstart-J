@@ -48,7 +48,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double flip0_oneStepRotationInDegree = 400;
 
     public static long flip0_joystick_cycleTimeInMillisecond = 100;
-    public static double flip0_joystick_maxRotateDegreeInOneSecond = 90;
+    public static double flip0_joystick_maxRotateDegreeInOneSecond = 60;
 
     public static double claw1_openDegree = 93;
     public static double claw1_closeDegree = 85;
@@ -73,9 +73,14 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double vertSlide_positionTolerance = 15;   // allowed maximum error
 
     /**
-     * factor of retracter power / extender power
+     * factor of retracter power / extender power when extending
      */
-    public static double horizontalExtender_retracterPowerFactor = 1.0;
+    public static double horizontalExtender_extendingPowerFactor = 0.8;
+    /**
+     * factor of extender power / retracter power when retracting
+     */
+    public static double horizontalExtender_retractingPowerFactor = 1.2;
+
     public static double horizontalExtender_joystickMaxPower = 0.5;
 
     private List<Action> runningActions = new ArrayList<>();

@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
@@ -29,17 +30,23 @@ public class HorizontalExtender {
         try {
             extender = new CRServo(hardwareMap, extenderName);
             retracter = new CRServo(hardwareMap, retracterName);
-
-            extender.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-            retracter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         } catch (Exception e) {
             available = false;
+            RobotLog.ee(RobotLog.TAG, e, "HorizontalExtender can't start");
         }
     }
 
     public void setPower(double power) {
-        extender.set(power);
-        retracter.set(power * CombinedActionTeleOpMode.horizontalExtender_retracterPowerFactor);
+        if (Math.abs(power) < 0.01) {
+            extender.set(0);
+            retracter.set(0);
+        } else if (power > 0) {
+            extender.set(power);
+            retracter.set(power * CombinedActionTeleOpMode.horizontalExtender_extendingPowerFactor);
+        } else {
+            retracter.set(power);
+            extender.set(power * CombinedActionTeleOpMode.horizontalExtender_retractingPowerFactor);
+        }
     }
 
     public ActionEx runForTime(long runForTime, double power) {

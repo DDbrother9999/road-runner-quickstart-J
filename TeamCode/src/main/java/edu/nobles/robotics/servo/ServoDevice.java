@@ -93,8 +93,6 @@ public class ServoDevice {
             telemetry.addData(deviceName + " Current Position:", current);
             telemetry.addData(deviceName + " To Position:", toDegree);
 
-            RobotLog.i(deviceName + " Current Position: %.1f, To: %.1f", current, toDegree);
-
             if (Math.abs(current - toDegree) <= 1) {
                 RobotLog.i(deviceName + " Stop");
                 telemetry.addLine(deviceName + " Stop");
@@ -143,7 +141,6 @@ public class ServoDevice {
 
             if (currentTime > nextActionTime) {
                 rotateByAngle = maxRotateDegreeInOneSecond * cycleTimeInMillisecond / 1000.0 * joystickPosition.get();
-                RobotLog.i(deviceName + " Current Angle: %.1f, rotateByAngle: %.1f", currentAngle, rotateByAngle);
                 if (-1 < rotateByAngle && rotateByAngle < 1) {
                     servo.rotateBy(0); // stop rotate
                 } else {
@@ -175,7 +172,6 @@ public class ServoDevice {
             servo.turnToAngle(toDegree);
             telemetry.addData(deviceName + " To Position:", toDegree);
 
-            RobotLog.i(deviceName + " To Position: %.1f", toDegree);
             return true;
         }
     }
