@@ -60,8 +60,6 @@ public class SingleAuto extends LinearOpMode {
 
     //start pose
     private Pose2d beginPose = new Pose2d(0, -62.5, Math.toRadians(90));
-    private intake1 testIntake1 = new intake1(hardwareMap);
-
 
     private MecanumDrive mecanumDrive;
 

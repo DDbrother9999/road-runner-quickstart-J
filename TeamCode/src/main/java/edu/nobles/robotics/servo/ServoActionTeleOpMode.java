@@ -30,6 +30,10 @@ public class ServoActionTeleOpMode extends LinearOpMode {
     public static double xThrottle = 0.4;
     public static double yThrottle = 0.4;
     public static double headThrottle = 0.05;
+    // if you don't rotate in steps, set this to 0
+    public static long intake1Flip_oneStepTime = 0;
+    // if you don't rotate in steps, set it to large number, such as 400
+    public static double intake1Flip_oneStepRotation = 400;
 
     private List<Action> runningActions = new ArrayList<>();
 

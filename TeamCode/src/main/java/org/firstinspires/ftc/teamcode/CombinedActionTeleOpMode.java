@@ -31,6 +31,7 @@ import edu.nobles.robotics.ActionEx;
 import edu.nobles.robotics.motor.HorizontalExtender;
 import edu.nobles.robotics.motor.MotorGroupEx;
 import edu.nobles.robotics.motor.SlideMotor;
+import edu.nobles.robotics.servo.ServoActionTeleOpMode;
 import edu.nobles.robotics.servo.ServoDevice;
 
 @TeleOp
@@ -43,12 +44,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double intake1Flip_initDegree = 61;
     public static double intake1Flip_flatDegree = 200;
 
-    // if you don't rotate in steps, set this to 0
-    public static long intake1Flip_oneStepTime = 0;
-    // if you don't rotate in steps, set it to large number, such as 400
-    public static double intake1Flip_oneStepRotation = 400;
-
-    public static long intake1Flip_m_cycleTime = 100;
+    public static long intake1Flip_m_cycleTime = 1000;
     public static double intake1Flip_m_rotateInSec = 60;
 
     public static double claw1_openDegree = 93;
@@ -69,7 +65,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static int vertDown_targetUp = -1000;
     public static int vertDown_targetDown = 0;
 
-    public static double DownConstantPower = -0.05;
+    public static double DownConstantPower = -0.00;
 
 
     //Vertical Slider's Position Controller
@@ -123,10 +119,10 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         addActionEx(intake1FlipServo.manualRotate(
                 () -> {
-                    if (gamepad1.dpad_up) return 1f;
-                    if (gamepad1.dpad_down) return -1f;
-                    if (gamepad2.dpad_up) return 1f;
-                    if (gamepad2.dpad_down) return -1f;
+                    if (gamepad1.dpad_up) return -1f;
+                    if (gamepad1.dpad_down) return 1f;
+                    if (gamepad2.dpad_up) return -1f;
+                    if (gamepad2.dpad_down) return 1f;
                     return 0f;
                 },
                 intake1Flip_m_cycleTime,
@@ -168,13 +164,12 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 }
             }
 
-            // TODO: comment out this block
-            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.BACK) && intake1FlipServo.available) {
-                RobotLog.i("Add flip0 action");
-                double toDegree = flipFlat ? intake1Flip_initDegree : intake1Flip_flatDegree;
-                addActionEx(intake1FlipServo.rotateCustom(toDegree, intake1Flip_oneStepTime, intake1Flip_oneStepRotation));
-                flipFlat = !flipFlat;
-            }
+//            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.BACK) && intake1FlipServo.available) {
+//                RobotLog.i("Add flip0 action");
+//                double toDegree = flipFlat ? intake1Flip_initDegree : intake1Flip_flatDegree;
+//                addActionEx(intake1FlipServo.rotateCustom(toDegree, ServoActionTeleOpMode.intake1Flip_oneStepTime, ServoActionTeleOpMode.intake1Flip_oneStepRotation));
+//                flipFlat = !flipFlat;
+//            }
 
             vertSlideControl(-gamepad2.left_stick_y);
 
