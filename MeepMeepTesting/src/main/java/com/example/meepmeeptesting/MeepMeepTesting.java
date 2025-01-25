@@ -16,21 +16,15 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -63, Math.toRadians(90)))
-                .strafeTo(new Vector2d(0, -43))
-                //Check for vertical slide extension
-                .strafeTo(new Vector2d(0, -34))
-                //Retract vertical slide, snapping piece onto
-                .strafeTo(new Vector2d(36, -34))
-                .strafeTo(new Vector2d(36, 0))
-                .strafeTo(new Vector2d(47, 0))
-                .strafeTo(new Vector2d(47, -60)) //Drops off in observation zone
-                .strafeTo(new Vector2d(47, 0))
-                .strafeTo(new Vector2d(56, 0))
-                .strafeTo(new Vector2d(56, -60))
-                .strafeTo(new Vector2d(56, 0))
-                .strafeTo(new Vector2d(56, 0))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(36, -63, Math.toRadians(-90)))
 
+                .strafeTo(new Vector2d(36, -9))
+                .strafeTo(new Vector2d(47, -9))
+                .strafeTo(new Vector2d(47, -60))
+                .strafeTo(new Vector2d(47, -9))
+                .strafeTo(new Vector2d(58, -9))
+                .strafeTo(new Vector2d(58, -60))
+                .strafeTo(new Vector2d(58, -9))
                 .build());
 
                 /*

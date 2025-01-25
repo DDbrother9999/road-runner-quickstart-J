@@ -32,6 +32,8 @@ Servos
 5 = servoExp5 = intake1SlideExtend  done
 
 --------------
+Gamepad1 = start + A (note ports)
+Gamepad2 = start + B (note ports)
 
 Controls
 
@@ -40,7 +42,7 @@ intake1Slider = gamepad1.left_trigger, gamepad1.right_trigger, gamepad2.left_tri
 intake1Spin pick up = gamepad1.LEFT_BUMPER, gamepad2.LEFT_BUMPER
 intake1Spin drop off = gamepad1.RIGHT_BUMPER, gamepad2.RIGHT_BUMPER
 
-mecanumDrive = gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x
+mecanumDrive = gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x (arm = front of robot)
 vertSlide = gamepad2.left_stick_y
 
 claw open = gamepad2.A
