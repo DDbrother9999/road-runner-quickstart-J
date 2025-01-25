@@ -24,7 +24,6 @@ public class MeepMeepTesting {
                 .strafeTo(new Vector2d(47, -9))
                 .strafeTo(new Vector2d(58, -9))
                 .strafeTo(new Vector2d(58, -60))
-                .strafeTo(new Vector2d(58, -9))
                 .build());
 
                 /*
