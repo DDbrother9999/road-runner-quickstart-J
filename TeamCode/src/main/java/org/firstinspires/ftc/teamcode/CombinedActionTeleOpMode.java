@@ -43,7 +43,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double move_RotateThrottle = 0.05;
 
     public static double intake1Flip_initDegree = 61;
-    public static double intake1Flip_flatDegree = 258;
+    public static double intake1Flip_flatDegree = 200;
 
     // if you don't rotate in steps, set this to 0
     public static long intake1Flip_oneStepTime = 0;
@@ -60,15 +60,17 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     public static double intake1Spin_power = 0.25;
 
-    public static int vertUp_max = 2000;
+    public static int vertUp_max = 5000;
     public static double vertUp_maxPower = 0.25;
     public static int vertUp_targetUp = 1000;
     public static int vertUp_targetDown = 0;
 
-    public static int vertDown_max = 2000;
+    public static int vertDown_max = 500;
     public static double vertDown_maxPower = vertUp_maxPower;
     public static int vertDown_targetUp = -1000;
     public static int vertDown_targetDown = 0;
+
+    public static double DownConstantPower = -0.05;
 
 
     //Vertical Slider's Position Controller
@@ -249,8 +251,10 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         try {
             MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, vertSlideLeftUpName, Motor.GoBILDA.RPM_435);
-            vertSlideLeftUp.setInverted(true);
+            vertSlideLeftUp.stopAndResetEncoder();
+            //vertSlideLeftUp.setInverted(true);
             MotorEx vertSlideRightUp = new MotorEx(hardwareMap, vertSlideRightUpName, Motor.GoBILDA.RPM_435);
+            vertSlideRightUp.stopAndResetEncoder();
 
             //DON'T INVERT MOTORS AFTER HERE
             MotorGroupEx vertSlideUpGroup = new MotorGroupEx(vertSlideRightUp, vertSlideLeftUp);
@@ -263,8 +267,10 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         try {
             MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, vertSlideLeftDownName, Motor.GoBILDA.RPM_312);
-            vertSlideLeftDown.setInverted(true);
+            vertSlideLeftDown.stopAndResetEncoder();
+            //vertSlideLeftDown.setInverted(true);
             MotorEx vertSlideRightDown = new MotorEx(hardwareMap, vertSlideRightDownName, Motor.GoBILDA.RPM_312);
+            vertSlideRightDown.stopAndResetEncoder();
 
             //DON'T INVERT MOTORS AFTER HERE
             MotorGroupEx vertSlideDownGroup = new MotorGroupEx(vertSlideRightDown, vertSlideLeftDown);
@@ -305,9 +311,11 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         boolean moving = false;
 
         if (Math.abs(power) < 0.01) {
-            // do nothing
+            // Maintain tension
+            vertSlideDown.slideMotor.set(DownConstantPower);
+            telemetry.addData("Constant power: ",DownConstantPower);
         }
-        if (power > 0) {
+        else if (power > 0) {
             // slide up
             vertSlideDown.zeroPowerWithFloat();
 
