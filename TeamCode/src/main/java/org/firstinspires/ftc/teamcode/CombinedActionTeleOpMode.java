@@ -59,7 +59,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double intake1Spin_power = 0.25;
 
     public static int vertUp_max = 5000;
-    public static double vertUp_maxPower = 0.25;
+    public static float vertUp_maxPower = 0.25f;
     public static int vertUp_targetUp = 1000;
     public static int vertUp_targetDown = 0;
 
@@ -306,13 +306,9 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         power = Range.clip(power, -vertUp_maxPower, vertUp_maxPower);
         if (Math.abs(power) < 0.01) {
-
             // Maintain tension
             vertSlideDown.slideMotor.set(DownConstantPower);
             telemetry.addData("Constant power: ",DownConstantPower);
-        }
-
-            // do nothing
         } else /*if (power > 0)*/ {
 
             // slide up
