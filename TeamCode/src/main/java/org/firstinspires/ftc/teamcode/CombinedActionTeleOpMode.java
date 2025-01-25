@@ -41,8 +41,8 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     public static double move_YThrottle = 0.4;
     public static double move_RotateThrottle = 0.05;
 
-    public static double intake1Flip_initDegree = 61;
-    public static double intake1Flip_flatDegree = 200;
+    public static double intake1Flip_initDegree = 80;
+    public static double intake1Flip_flatDegree = 220;
 
     public static long intake1Flip_m_cycleTime = 1000;
     public static double intake1Flip_m_rotateInSec = 60;
