@@ -18,7 +18,7 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -36,8 +36,6 @@ import edu.nobles.robotics.servo.ServoDevice;
 @TeleOp
 @Config
 public class CombinedActionTeleOpMode extends LinearOpMode {
-    public static boolean switchGamepad1And2 = false;
-
     public static double move_XThrottle = 0.4;
     public static double move_YThrottle = 0.4;
     public static double move_RotateThrottle = 0.05;
@@ -67,6 +65,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     public static int vertDown_max = 500;
     public static double vertDown_maxPower = vertUp_maxPower;
+
     public static int vertDown_targetUp = -1000;
     public static int vertDown_targetDown = 0;
 
@@ -183,13 +182,13 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 RobotLog.i("Add slide up");
                 // vertSlideDown.zeroPowerWithFloat();
                 addActionEx(vertSlideUp.moveSlide(vertUp_targetUp, vertUp_maxPower));
-                addActionEx(vertSlideDown.moveSlide(vertDown_targetUp, vertDown_maxPower));
+                //addActionEx(vertSlideDown.moveSlide(vertDown_targetUp, vertDown_maxPower));
             }
             if (gamepadEx2.wasJustPressed(GamepadKeys.Button.X) && vertSlideUp != null && vertSlideDown != null) {
                 RobotLog.i("Add slide down");
                 // vertSlideUp.zeroPowerWithFloat();
-                addActionEx(vertSlideUp.moveSlide(vertUp_targetDown, vertUp_maxPower));
-                addActionEx(vertSlideDown.moveSlide(vertDown_targetDown, vertDown_maxPower));
+                addActionEx(vertSlideUp.moveSlide(vertUp_targetDown, vertDown_maxPower));
+                //addActionEx(vertSlideDown.moveSlide(vertDown_targetDown, vertDown_maxPower));
             }
 
             if (gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) {
@@ -223,12 +222,6 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
     }
 
     private void initHardware() {
-        if (switchGamepad1And2) {
-            Gamepad temp = gamepad1;
-            gamepad1 = gamepad2;
-            gamepad2 = temp;
-        }
-
         List<ServoDevice> servoList = new ArrayList<>();
 
         mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
@@ -253,6 +246,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             MotorEx vertSlideLeftUp = new MotorEx(hardwareMap, vertSlideLeftUpName, Motor.GoBILDA.RPM_435);
             vertSlideLeftUp.stopAndResetEncoder();
             //vertSlideLeftUp.setInverted(true);
+
             MotorEx vertSlideRightUp = new MotorEx(hardwareMap, vertSlideRightUpName, Motor.GoBILDA.RPM_435);
             vertSlideRightUp.stopAndResetEncoder();
 
@@ -310,34 +304,41 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
         boolean moving = false;
 
+        power = Range.clip(power, -vertUp_maxPower, vertUp_maxPower);
         if (Math.abs(power) < 0.01) {
+
             // Maintain tension
             vertSlideDown.slideMotor.set(DownConstantPower);
             telemetry.addData("Constant power: ",DownConstantPower);
         }
-        else if (power > 0) {
-            // slide up
-            vertSlideDown.zeroPowerWithFloat();
 
-            if (vertSlideUp.slideMotor.getCurrentPosition() < vertUp_max) {
-                vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+            // do nothing
+        } else /*if (power > 0)*/ {
+
+            // slide up
+            // vertSlideDown.zeroPowerWithFloat();
+
+            int position = vertSlideUp.slideMotor.getCurrentPosition();
+            if (!(position > vertUp_max && power > 0) ) {
+                // vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
                 vertSlideUp.slideMotor.set(power);
                 moving = true;
             }
-        } else if (power < 0) {
-            // slide down
-            vertSlideUp.zeroPowerWithFloat();
-            if (vertSlideDown.slideMotor.getCurrentPosition() < vertDown_max) {
-                vertSlideDown.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-                vertSlideDown.slideMotor.set(-power);
-                moving = true;
-            }
         }
+//        else if (power < 0) {
+//            // slide down
+//            vertSlideUp.zeroPowerWithFloat();
+//            if (vertSlideDown.slideMotor.getCurrentPosition() < vertDown_max) {
+//                vertSlideDown.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+//                vertSlideDown.slideMotor.set(-power);
+//                moving = true;
+//            }
+//        }
 
         if (!moving) {
-            if(!vertSlideAlreadyStopped) {
+            if (!vertSlideAlreadyStopped) {
                 vertSlideUp.slideMotor.set(0);
-                vertSlideDown.slideMotor.set(0);
+                // vertSlideDown.slideMotor.set(0);
                 vertSlideAlreadyStopped = true;
             }
         } else {
@@ -355,7 +356,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 //        telemetry.addData("right_stick_x", gamepad1.right_stick_x);
 
         if (drive.available) {
-            if(currentTime > nextReportTime) {
+            if (currentTime > nextReportTime) {
                 drive.updatePoseEstimate();
             }
             telemetry.addData("x", drive.pose.position.x);
