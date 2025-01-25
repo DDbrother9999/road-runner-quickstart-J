@@ -84,9 +84,14 @@ public class SingleAuto extends LinearOpMode {
                 .strafeTo(new Vector2d(47, -60)) //Drops off in observation zone
                 .strafeTo(new Vector2d(47, 0))
                 .strafeTo(new Vector2d(56, 0))
-                .strafeTo(new Vector2d(56, -60))
+                .strafeTo(new Vector2d(56, -60));
+
+                /*
                 .strafeTo(new Vector2d(56, 0))
-                .strafeTo(new Vector2d(56, 0));
+                .strafeTo(new Vector2d(65, 0))
+                .strafeTo(new Vector2d(65, -60));
+
+                 */
 
         Action moveInitial = moveInitialTraj.build();
         Action moveToSub = moveToSubTraj.build();

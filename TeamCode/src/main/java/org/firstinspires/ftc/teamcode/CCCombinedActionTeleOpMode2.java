@@ -1,6 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
-import static edu.nobles.robotics.DeviceNameList.*;
+import static edu.nobles.robotics.DeviceNameList.clawLeftName;
+import static edu.nobles.robotics.DeviceNameList.clawRightName;
+import static edu.nobles.robotics.DeviceNameList.intake1FlipName;
+import static edu.nobles.robotics.DeviceNameList.intake1SlideExtendName;
+import static edu.nobles.robotics.DeviceNameList.intake1SlideRetractName;
+import static edu.nobles.robotics.DeviceNameList.intake1spinName;
+import static edu.nobles.robotics.DeviceNameList.vertSlideLeftDownName;
+import static edu.nobles.robotics.DeviceNameList.vertSlideLeftUpName;
+import static edu.nobles.robotics.DeviceNameList.vertSlideRightDownName;
+import static edu.nobles.robotics.DeviceNameList.vertSlideRightUpName;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -31,12 +40,11 @@ import edu.nobles.robotics.ActionEx;
 import edu.nobles.robotics.motor.HorizontalExtender;
 import edu.nobles.robotics.motor.MotorGroupEx;
 import edu.nobles.robotics.motor.SlideMotor;
-import edu.nobles.robotics.servo.ServoActionTeleOpMode;
 import edu.nobles.robotics.servo.ServoDevice;
 
 @TeleOp
 @Config
-public class CombinedActionTeleOpMode extends LinearOpMode {
+public class CCCombinedActionTeleOpMode2 extends LinearOpMode {
     public static double move_XThrottle = 0.8;
     public static double move_YThrottle = 0.8;
     public static double move_RotateThrottle = 0.05;
@@ -54,12 +62,12 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
 
     public static double intake1Spin_power = 0.5;
 
-    public static int vertUp_max = 1000;
-    public static float vertUp_maxPower = 1f;
+    public static int vertUp_max = 20000;
+    public static float vertUp_maxPower = 0.6f;
     public static int vertUp_targetUp = 5000;
     public static int vertUp_targetDown = 500;
 
-    public static int vertDown_max = 10000;
+    public static int vertDown_max = 20000;
     public static double vertDown_maxPower = vertUp_maxPower;
 
     public static int vertDown_targetUp = -5000;
@@ -319,7 +327,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                 // vertSlideDown.zeroPowerWithFloat();
 
                 int position = vertSlideUp.slideMotor.getCurrentPosition();
-                if (!(position > vertUp_max && power > 0)) {
+                //if (!(position > vertUp_max && power > 0)) {
                     // vertSlideUp.slideMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
                     vertSlideUp.slideMotor.set(power);
                     if (power > 0) {
@@ -328,7 +336,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
                         vertSlideDown.slideMotor.set(downPowerFactor * power);
                     }
                     trueMoving = true;
-                }
+                //}
             }
 
         }

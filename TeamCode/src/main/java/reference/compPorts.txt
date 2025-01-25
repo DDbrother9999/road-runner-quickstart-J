@@ -39,14 +39,14 @@ Controls
 
 intake1Flip = gamepad1.dpad_up, gamepad1.dpad_down, gamepad2.dpad_up, gamepad2.dpad_down,
 intake1Slider = gamepad1.left_trigger, gamepad1.right_trigger, gamepad2.left_trigger, gamepad2.right_trigger
-intake1Spin pick up = gamepad1.LEFT_BUMPER, gamepad2.LEFT_BUMPER
-intake1Spin drop off = gamepad1.RIGHT_BUMPER, gamepad2.RIGHT_BUMPER
+intake1Spin drop off = gamepad1.LEFT_BUMPER, gamepad2.LEFT_BUMPER
+intake1Spin pick up = gamepad1.RIGHT_BUMPER, gamepad2.RIGHT_BUMPER
 
 mecanumDrive = gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x (arm = front of robot)
 vertSlide = gamepad2.left_stick_y
 
 claw open = gamepad2.A
-claw close = gamepad2.B
+claw close = gamepad2.Y
 
 vertSlide up= gamepad2.Y
 vertSlide down= gamepad2.X

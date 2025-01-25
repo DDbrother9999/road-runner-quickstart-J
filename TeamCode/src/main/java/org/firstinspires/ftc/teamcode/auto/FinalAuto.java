@@ -25,7 +25,7 @@ public class FinalAuto extends LinearOpMode {
     public static double targetY= -90;
 
     //start pose
-    private Pose2d beginPose = new Pose2d(36, -62.5, Math.toRadians(-90));
+    private Pose2d beginPose = new Pose2d(14, -63, Math.toRadians(-90));
 
     private MecanumDrive mecanumDrive;
 
@@ -36,12 +36,14 @@ public class FinalAuto extends LinearOpMode {
         mecanumDrive = new MecanumDrive(hardwareMap, beginPose);
 
         TrajectoryActionBuilder pushTraj = mecanumDrive.actionBuilder(beginPose)
+                .strafeTo(new Vector2d(36, -63))
                 .strafeTo(new Vector2d(36, -9))
                 .strafeTo(new Vector2d(47, -9))
                 .strafeTo(new Vector2d(47, -60))
                 .strafeTo(new Vector2d(47, -9))
                 .strafeTo(new Vector2d(58, -9))
-                .strafeTo(new Vector2d(58, -60));
+                .strafeTo(new Vector2d(58, -60))
+                .strafeTo(new Vector2d(58, -9));
 
         Action push = pushTraj.build();
 
