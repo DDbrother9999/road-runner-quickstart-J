@@ -44,13 +44,13 @@ public class TuningParameter extends MecanumDrive.Params {
         // drive model parameters
         // 0.0019789560019118
         param.inPerTick = 1.0d / 25.4d / param.pinpointParams.encoderResolution;
-        param.lateralInPerTick = 0.001623458773196117;
-        param.trackWidthTicks = 7479.9620110751885;
+        param.lateralInPerTick = 0.0014138115299789616;
+        param.trackWidthTicks = 7556.7794153457235;
 
         // feedforward parameters (in tick units)
         param.kS = 1.2020325252548236;
         param.kV = 0.00038385015189693154;
-        param.kA = 0.0001;
+        param.kA = 0.00005;
 
         // path profile parameters (in inches)
         param.maxWheelVel = 20;
