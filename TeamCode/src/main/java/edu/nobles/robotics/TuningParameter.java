@@ -48,8 +48,8 @@ public class TuningParameter extends MecanumDrive.Params {
         param.trackWidthTicks = 7479.9620110751885;
 
         // feedforward parameters (in tick units)
-        param.kS = 0.8413297455354614;
-        param.kV = 0.00036203672651163404;
+        param.kS = 1.2020325252548236;
+        param.kV = 0.00038385015189693154;
         param.kA = 0.0001;
 
         // path profile parameters (in inches)
