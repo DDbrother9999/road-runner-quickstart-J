@@ -41,7 +41,7 @@ intake1Spin pick up = gamepad1.LEFT_BUMPER, gamepad2.LEFT_BUMPER
 intake1Spin drop off = gamepad1.RIGHT_BUMPER, gamepad2.RIGHT_BUMPER
 
 mecanumDrive = gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x
-vertSlider = gamepad2.left_stick_y
+vertSlide = gamepad2.left_stick_y
 
 claw open = gamepad2.A
 claw close = gamepad2.B
