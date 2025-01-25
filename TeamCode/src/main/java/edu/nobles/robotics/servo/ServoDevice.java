@@ -31,7 +31,7 @@ public class ServoDevice {
     private double practicalMaxAngle;
 
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry) {
-        this(deviceName, hardwareMap, telemetry, 300); //All gobilda servos are 0 to 300
+        this(deviceName, hardwareMap, telemetry, 255); //All gobilda servos are 0 to 300
     }
 
     public ServoDevice(String deviceName, HardwareMap hardwareMap, Telemetry telemetry, double maxAngle) {
