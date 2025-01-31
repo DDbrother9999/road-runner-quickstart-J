@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -15,20 +16,22 @@ import java.util.function.Supplier;
 import edu.nobles.robotics.ActionEx;
 
 public class HorizontalExtender {
-    private CRServo extender;
-    private CRServo retracter;
+    private final String deviceName;
     private final Telemetry telemetry;
+    public MotorGroupEx extender;
 
     public boolean available = true;
 
-    private final String deviceName = "HorizontalExtender";
-
-    public HorizontalExtender(String extenderName, String retracterName, HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
-
+    public HorizontalExtender(MotorGroupEx inSlideMotorGroup, Telemetry telemetry, String deviceName) {
         try {
-            extender = new CRServo(hardwareMap, extenderName);
-            retracter = new CRServo(hardwareMap, retracterName);
+            extender = inSlideMotorGroup;
+
+            this.deviceName = deviceName;
+            this.telemetry = telemetry;
+            extender.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+            extender.stopAndResetEncoder();
+
+            extender.set(0);
         } catch (Exception e) {
             available = false;
             RobotLog.ee(RobotLog.TAG, e, "HorizontalExtender can't start");
@@ -38,12 +41,9 @@ public class HorizontalExtender {
     public void setPower(double power) {
         if (Math.abs(power) < 0.01) {
             extender.set(0);
-            retracter.set(0);
         } else if (power > 0) {
             extender.set(power);
-            retracter.set(power * CombinedActionTeleOpMode.intakeSlide_extendFactor);
         } else {
-            retracter.set(power);
             extender.set(power * CombinedActionTeleOpMode.intakeSlide_retractFactor);
         }
     }
