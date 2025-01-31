@@ -31,7 +31,6 @@ import edu.nobles.robotics.ActionEx;
 import edu.nobles.robotics.motor.HorizontalExtender;
 import edu.nobles.robotics.motor.MotorGroupEx;
 import edu.nobles.robotics.motor.SlideMotor;
-import edu.nobles.robotics.servo.ServoActionTeleOpMode;
 import edu.nobles.robotics.servo.ServoDevice;
 
 @TeleOp
@@ -249,7 +248,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
             vertSlideLeftUp.stopAndResetEncoder();
             //vertSlideLeftUp.setInverted(true);
 
-            MotorEx vertSlideRightUp = new MotorEx(hardwareMap, vertSlideRightUpName, Motor.GoBILDA.RPM_435);
+            MotorEx vertSlideRightUp = new MotorEx(hardwareMap, vertSlideUpName, Motor.GoBILDA.RPM_435);
             vertSlideRightUp.stopAndResetEncoder();
 
             //DON'T INVERT MOTORS AFTER HERE
@@ -262,7 +261,7 @@ public class CombinedActionTeleOpMode extends LinearOpMode {
         }
 
         try {
-            MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, vertSlideLeftDownName, Motor.GoBILDA.RPM_312);
+            MotorEx vertSlideLeftDown = new MotorEx(hardwareMap, vertSlideDownName, Motor.GoBILDA.RPM_312);
             vertSlideLeftDown.stopAndResetEncoder();
             //vertSlideLeftDown.setInverted(true);
             MotorEx vertSlideRightDown = new MotorEx(hardwareMap, vertSlideRightDownName, Motor.GoBILDA.RPM_312);

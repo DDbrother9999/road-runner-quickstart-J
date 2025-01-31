@@ -1,15 +1,5 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-import static edu.nobles.robotics.DeviceNameList.clawLeftName;
-import static edu.nobles.robotics.DeviceNameList.clawRightName;
-import static edu.nobles.robotics.DeviceNameList.intake1FlipName;
-import static edu.nobles.robotics.DeviceNameList.intake1SlideExtendName;
-import static edu.nobles.robotics.DeviceNameList.intake1SlideRetractName;
-import static edu.nobles.robotics.DeviceNameList.intake1spinName;
-import static edu.nobles.robotics.DeviceNameList.vertSlideLeftDownName;
-import static edu.nobles.robotics.DeviceNameList.vertSlideLeftUpName;
-import static edu.nobles.robotics.DeviceNameList.vertSlideRightDownName;
-import static edu.nobles.robotics.DeviceNameList.vertSlideRightUpName;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -19,27 +9,10 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import edu.nobles.robotics.motor.HorizontalExtender;
-import edu.nobles.robotics.motor.MotorGroupEx;
-import edu.nobles.robotics.motor.SlideMotor;
-import edu.nobles.robotics.servo.ServoDevice;
-import edu.nobles.robotics.servo.intake1;
 
 
 @Config
