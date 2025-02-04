@@ -21,12 +21,13 @@ public class HorizontalExtender {
     public boolean available = true;
 
     public HorizontalExtender(MotorGroupEx inSlideMotorGroup, Telemetry telemetry, String deviceName) {
+        this.deviceName = deviceName;
+        this.telemetry=telemetry;
         try {
             extender = inSlideMotorGroup;
             extender.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
             extender.stopAndResetEncoder();
-            this.deviceName = "Unavailable HorizontalExtender";
-            this.telemetry=telemetry;
+
             extender.set(0);
         } catch (Exception e) {
             available = false;
