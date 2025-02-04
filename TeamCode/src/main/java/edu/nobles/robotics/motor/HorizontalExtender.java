@@ -3,13 +3,11 @@ package edu.nobles.robotics.motor;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
+import org.firstinspires.ftc.teamcode.ANewActionTeleOpMode;
 
 import java.util.function.Supplier;
 
@@ -25,12 +23,10 @@ public class HorizontalExtender {
     public HorizontalExtender(MotorGroupEx inSlideMotorGroup, Telemetry telemetry, String deviceName) {
         try {
             extender = inSlideMotorGroup;
-
-            this.deviceName = deviceName;
-            this.telemetry = telemetry;
             extender.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
             extender.stopAndResetEncoder();
-
+            this.deviceName = "Unavailable HorizontalExtender";
+            this.telemetry=telemetry;
             extender.set(0);
         } catch (Exception e) {
             available = false;
@@ -44,7 +40,7 @@ public class HorizontalExtender {
         } else if (power > 0) {
             extender.set(power);
         } else {
-            extender.set(power * CombinedActionTeleOpMode.intakeSlide_retractFactor);
+            extender.set(power * ANewActionTeleOpMode.intakeSlide_retractFactor);
         }
     }
 

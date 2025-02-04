@@ -1,6 +1,6 @@
 package edu.nobles.robotics.servo;
 
-import static org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode.*;
+import static org.firstinspires.ftc.teamcode.ANewActionTeleOpMode.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

@@ -8,7 +8,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import static org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode.*;
+import static org.firstinspires.ftc.teamcode.ANewActionTeleOpMode.*;
 
 @Autonomous(name = "FlipServoTest", group = "Autonomous")
 public class FlipServoTestOpMode extends LinearOpMode {

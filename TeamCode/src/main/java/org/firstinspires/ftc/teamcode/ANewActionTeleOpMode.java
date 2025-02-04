@@ -277,7 +277,17 @@ public class ANewActionTeleOpMode extends LinearOpMode {
             RobotLog.e("VertSlideDown are not available");
         }
 
-        horizontalExtender = new HorizontalExtender(intake1SlideExtendName, hardwareMap, telemetry);
+        try {
+            MotorEx horizontalExtenderMotor = new MotorEx(hardwareMap, vertSlideDownName, Motor.GoBILDA.RPM_312);
+            horizontalExtenderMotor.stopAndResetEncoder();
+
+            //DON'T INVERT MOTORS AFTER HERE
+            MotorGroupEx horizontalExtenderGroup = new MotorGroupEx(horizontalExtenderMotor);
+
+            horizontalExtender = new HorizontalExtender(horizontalExtenderGroup, telemetry, "horizontalExtender");
+        } catch (Exception e) {
+            RobotLog.e("horizontalExtender are not available");
+        }
 
         //GAMEPADS
         gamepadEx1 = new GamepadEx(gamepad1);

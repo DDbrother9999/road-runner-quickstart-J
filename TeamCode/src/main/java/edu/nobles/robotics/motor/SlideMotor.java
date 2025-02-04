@@ -8,7 +8,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.CombinedActionTeleOpMode;
+import org.firstinspires.ftc.teamcode.ANewActionTeleOpMode;
 
 import edu.nobles.robotics.ActionEx;
 
@@ -47,8 +47,8 @@ public class SlideMotor {
         if (slideMotor.runmode != Motor.RunMode.PositionControl) {
             RobotLog.i(deviceName + " setActionMode ");
             slideMotor.setRunMode(Motor.RunMode.PositionControl);
-            slideMotor.setPositionCoefficient(CombinedActionTeleOpMode.vertSlide_kP);
-            slideMotor.setPositionTolerance(CombinedActionTeleOpMode.vertSlide_positionTolerance); // allowed maximum error
+            slideMotor.setPositionCoefficient(ANewActionTeleOpMode.vertSlide_kP);
+            slideMotor.setPositionTolerance(ANewActionTeleOpMode.vertSlide_positionTolerance); // allowed maximum error
         }
     }
 
