@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static edu.nobles.robotics.DeviceNameList.*;
+import static edu.nobles.robotics.parameters.DeviceNameList.*;
 
 import androidx.annotation.NonNull;
 

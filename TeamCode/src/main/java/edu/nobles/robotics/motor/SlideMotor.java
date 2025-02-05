@@ -106,18 +106,9 @@ public class SlideMotor {
             slideMotor.set(maxPower);
             double actualPower = slideMotor.get();
             telemetry.addData(deviceName + " Power:", actualPower);
+
             // RobotLog.i(deviceName + " Power: " + actualPower + " maxPower:"+maxPower);
 
-
-            /*
-            Basic cache to prevent repeats (not working, not sure why)
-
-            if (lastPowerSet != maxPower) {
-                slideMotor.set(maxPower);
-                lastPowerSet=maxPower;
-            }
-
-             */
 
 //            RobotLog.i(deviceName + " maxPower: " + maxPower);
 //            double corrected = ((MotorGroup) slideMotor).iterator().next().getCorrectedVelocity();

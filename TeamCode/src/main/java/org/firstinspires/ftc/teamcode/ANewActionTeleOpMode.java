@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import static edu.nobles.robotics.DeviceNameList.clawName;
-import static edu.nobles.robotics.DeviceNameList.intake1FlipName;
-import static edu.nobles.robotics.DeviceNameList.intake1SlideExtendName;
-import static edu.nobles.robotics.DeviceNameList.intake1spinName;
-import static edu.nobles.robotics.DeviceNameList.vertSlideDownName;
-import static edu.nobles.robotics.DeviceNameList.vertSlideUpName;
+import static edu.nobles.robotics.parameters.DeviceNameList.clawName;
+import static edu.nobles.robotics.parameters.DeviceNameList.intake1FlipName;
+import static edu.nobles.robotics.parameters.DeviceNameList.intake1spinName;
+import static edu.nobles.robotics.parameters.DeviceNameList.vertSlideDownName;
+import static edu.nobles.robotics.parameters.DeviceNameList.vertSlideUpName;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -71,7 +70,7 @@ public class ANewActionTeleOpMode extends LinearOpMode {
 
     public static double DownConstantPower = -0.00;
 
-    public static double ignoreCutoff = 0.01;
+    public static double ignoreCutoff = 0.02;
 
 
     //Vertical Slider's Position Controller
@@ -252,11 +251,8 @@ public class ANewActionTeleOpMode extends LinearOpMode {
             vertSlideLeftUp.stopAndResetEncoder();
             //vertSlideLeftUp.setInverted(true);
 
-            MotorEx vertSlideRightUp = new MotorEx(hardwareMap, vertSlideUpName, Motor.GoBILDA.RPM_435);
-            vertSlideRightUp.stopAndResetEncoder();
-
             //DON'T INVERT MOTORS AFTER HERE
-            MotorGroupEx vertSlideUpGroup = new MotorGroupEx(vertSlideRightUp, vertSlideLeftUp);
+            MotorGroupEx vertSlideUpGroup = new MotorGroupEx(vertSlideLeftUp);
 
             vertSlideUp = new SlideMotor(vertSlideUpGroup, telemetry, "vertSlideUp");
             vertSlideUp.setManualMode();

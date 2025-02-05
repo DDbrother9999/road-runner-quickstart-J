@@ -1,4 +1,4 @@
-package edu.nobles.robotics;
+package edu.nobles.robotics.parameters;
 
 import com.acmerobotics.dashboard.config.Config;
 

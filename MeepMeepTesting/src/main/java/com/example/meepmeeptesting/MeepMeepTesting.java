@@ -16,6 +16,7 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
+        //No vert slides
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(14, -63, Math.toRadians(-90)))
                 .strafeTo(new Vector2d(36, -63))
                 .strafeTo(new Vector2d(36, -9))

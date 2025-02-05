@@ -10,10 +10,7 @@ import static edu.nobles.robotics.parameters.DeviceNameList.vertSlideUpName;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -24,7 +21,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.ANewActionTeleOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.ArrayList;
@@ -33,13 +29,12 @@ import java.util.stream.Collectors;
 
 import edu.nobles.robotics.motor.MotorGroupEx;
 import edu.nobles.robotics.motor.SlideMotor;
-import edu.nobles.robotics.parameters.ParameterManager;
 import edu.nobles.robotics.servo.ServoDevice;
 
 
 @Config
-@Autonomous(name = "FinalAuto", group = "Autonomous")
-public class FinalAuto extends LinearOpMode {
+@Autonomous(name = "PushAuto", group = "Autonomous")
+public class PushAuto extends LinearOpMode {
     public static double startX= 36;
     public static double startY= -62.5;
     public static double startHeading= -90;
@@ -69,32 +64,16 @@ public class FinalAuto extends LinearOpMode {
 
 
 
-        TrajectoryActionBuilder moveInitialTraj = mecanumDrive.actionBuilder(beginPose)
-                .strafeTo(new Vector2d(0, -43))
-                //Check for vertical slide extension
-                .strafeTo(new Vector2d(0, -34));
+        TrajectoryActionBuilder pushTraj = mecanumDrive.actionBuilder(beginPose)
+                .strafeTo(new Vector2d(36, -63))
+                .strafeTo(new Vector2d(36, -9))
+                .strafeTo(new Vector2d(47, -9))
+                .strafeTo(new Vector2d(47, -60))
+                .strafeTo(new Vector2d(47, -9))
+                .strafeTo(new Vector2d(58, -9))
+                .strafeTo(new Vector2d(58, -60))
+                .strafeTo(new Vector2d(58, -9));
 
-        TrajectoryActionBuilder moveToSubTraj = moveInitialTraj.endTrajectory().fresh()
-                .strafeTo(new Vector2d(0, -34));
-
-        TrajectoryActionBuilder pushTraj = moveToSubTraj.endTrajectory().fresh()
-                .strafeTo(new Vector2d(36, -34))
-                .strafeTo(new Vector2d(36, 0))
-                .strafeTo(new Vector2d(47, 0))
-                .strafeTo(new Vector2d(47, -60)) //Drops off in observation zone
-                .strafeTo(new Vector2d(47, 0))
-                .strafeTo(new Vector2d(56, 0))
-                .strafeTo(new Vector2d(56, -60));
-
-                /*
-                .strafeTo(new Vector2d(56, 0))
-                .strafeTo(new Vector2d(65, 0))
-                .strafeTo(new Vector2d(65, -60));
-
-                 */
-
-        Action moveInitial = moveInitialTraj.build();
-        Action moveToSub = moveToSubTraj.build();
         Action push = pushTraj.build();
 
         // actions that need to happen on init; for instance, a claw tightening.
@@ -106,27 +85,7 @@ public class FinalAuto extends LinearOpMode {
 
 
         Actions.runBlocking(
-                new SequentialAction(
-                        new ParallelAction(
-                                moveInitial,
-                                vertSlideUp.moveSlide(ParameterManager.highChamberExtendUpPos, ANewActionTeleOpMode.vertUp_maxPower),
-                                vertSlideDown.moveSlide(ParameterManager.highChamberExtendDownPos, ANewActionTeleOpMode.vertDown_maxPower)
-                        ),
-                        moveToSub,
-                        new SleepAction(1.0),
-                        new ParallelAction(
-                                vertSlideUp.moveSlide(ParameterManager.highChamberRetractUpPos, ANewActionTeleOpMode.vertUp_maxPower),
-                                vertSlideDown.moveSlide(ParameterManager.highChamberRetractDownPos, ANewActionTeleOpMode.vertDown_maxPower)
-                        ),
-
-                        //TODO: May need race action (new, need to merge) with timer to open claw even if motors stall
-                        clawServo.rotateNormal(ANewActionTeleOpMode.claw1_openDegree),
-                        new ParallelAction(
-                                vertSlideUp.moveSlide(ParameterManager.highChamberExtendUpPos, ANewActionTeleOpMode.vertUp_maxPower),
-                                vertSlideDown.moveSlide(ParameterManager.highChamberExtendDownPos, ANewActionTeleOpMode.vertDown_maxPower)
-                        ),
-                        push
-                )
+            push
         );
     }
 
@@ -204,6 +163,14 @@ public class FinalAuto extends LinearOpMode {
         //if (!horizontalExtender.available) unavailableHardwares.add("horizontalExtender");
 
         unavailableHardwares.addAll(servoList.stream().filter(servo -> !servo.available).map(ServoDevice::getDeviceName).collect(Collectors.toList()));
+    }
+
+    private void vertSlideMove(int target, float power) {
+        vertSlideUp.moveSlide(target, power);
+        vertSlideDown.moveSlide(target, power);
+    }
+    private void horizontalSlideMove(int target, float power) {
+        horizontalExtender.moveSlide(target, power);
     }
 
 }
