@@ -121,6 +121,7 @@ public class FinalAuto extends LinearOpMode {
 
                         //TODO: May need race action (new, need to merge) with timer to open claw even if motors stall
                         clawServo.rotateNormal(ANewActionTeleOpMode.claw1_openDegree),
+                        new SleepAction(1.0),
                         new ParallelAction(
                                 vertSlideUp.moveSlide(ParameterManager.highChamberExtendUpPos, ANewActionTeleOpMode.vertUp_maxPower),
                                 vertSlideDown.moveSlide(ParameterManager.highChamberExtendDownPos, ANewActionTeleOpMode.vertDown_maxPower)
